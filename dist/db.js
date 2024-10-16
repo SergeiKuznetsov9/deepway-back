@@ -17,9 +17,6 @@ const mongodb_1 = require("mongodb");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const mongoUri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CLUSTER}/?retryWrites=true&w=majority&appName=Cluster-deepway`;
-console.log('MONGO_USERNAME', process.env.MONGO_USERNAME);
-console.log('MONGO_PASSWORD', process.env.MONGO_PASSWORD);
-console.log('MONGO_CLUSTER', process.env.MONGO_CLUSTER);
 exports.client = new mongodb_1.MongoClient(mongoUri, {
     serverApi: {
         version: mongodb_1.ServerApiVersion.v1,

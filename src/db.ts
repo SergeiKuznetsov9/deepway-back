@@ -4,9 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const mongoUri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CLUSTER}/?retryWrites=true&w=majority&appName=Cluster-deepway`;
-console.log('MONGO_USERNAME', process.env.MONGO_USERNAME)
-console.log('MONGO_PASSWORD', process.env.MONGO_PASSWORD)
-console.log('MONGO_CLUSTER', process.env.MONGO_CLUSTER)
 
 export const client = new MongoClient(mongoUri, {
   serverApi: {
