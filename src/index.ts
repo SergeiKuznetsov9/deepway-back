@@ -218,15 +218,15 @@ app.get("/articles/:id", async (req, res) => {
   }
 });
 
-app.get("/profile/:id", async (req, res) => {
-  const profileId = req.params.id;
+app.get("/profile/:username", async (req, res) => {
+  const username = req.params.username;
 
   try {
-    const profile = (await client
+    const profile = await client
       .db("deepway")
       .collection("profile")
-      .aggregate([{ $match: { _id: new ObjectId(profileId) } }])
-      .next()) as WithId<Document>;
+      .findOne({ username });
+    console.log(profile);
     res.json(profile);
   } catch (error) {
     console.error("Ошибка чтения данных", error);
@@ -274,6 +274,22 @@ app.put("/profile/:id", async (req: any, res: any) => {
   } catch (error) {
     console.error("Ошибка обновления данных", error);
     res.status(500).json({ error: "Ошибка обновления данных" });
+  }
+});
+
+app.get("/article-ratings", async (req: any, res: any) => {
+  const { userId, articleId } = req.query;
+
+  try {
+    const articleRating = await client
+      .db("deepway")
+      .collection("article-ratings")
+      .findOne({ userId, articleId });
+
+    res.status(200).json(articleRating);
+  } catch (error) {
+    console.error("Ошибка получения данных", error);
+    res.status(500).json({ error: "Ошибка получения данных" });
   }
 });
 
