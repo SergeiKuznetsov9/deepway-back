@@ -56,7 +56,7 @@ app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     let articles = [];
     const { _expand, _sort, _page, _limit, _order, q, type } = req.query;
     const pipeline = [];
-    if (type) {
+    if (type && type !== 'ALL') {
         pipeline.push({
             $match: {
                 type: type,
