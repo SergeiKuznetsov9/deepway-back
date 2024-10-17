@@ -250,6 +250,21 @@ app.get("/article-ratings", (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(500).json({ error: "Ошибка получения данных" });
     }
 }));
+app.post("/article-ratings", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { articleId, userId, rate, feedback } = req.body;
+    const rating = { articleId, userId, rate, feedback };
+    try {
+        const result = yield db_1.client
+            .db("deepway")
+            .collection("article-ratings")
+            .insertOne(rating);
+        res.status(201).json({ id: result.insertedId.toString() });
+    }
+    catch (error) {
+        console.error("Ошибка сохранения данных", error);
+        res.status(500).json({ error: "Ошибка сохранения данных" });
+    }
+}));
 app.get("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { _expand, articleId } = req.query;
     const pipeline = [{ $match: { articleId: articleId } }];
