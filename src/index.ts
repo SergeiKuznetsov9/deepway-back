@@ -293,6 +293,23 @@ app.get("/article-ratings", async (req: any, res: any) => {
   }
 });
 
+app.post("/article-ratings", async (req, res) => {
+  const { articleId, userId, rate, feedback } = req.body;
+  const rating = { articleId, userId, rate, feedback };
+
+  try {
+    const result = await client
+      .db("deepway")
+      .collection("article-ratings")
+      .insertOne(rating);
+
+    res.status(201).json({ id: result.insertedId.toString() });
+  } catch (error) {
+    console.error("Ошибка сохранения данных", error);
+    res.status(500).json({ error: "Ошибка сохранения данных" });
+  }
+});
+
 app.get("/comments", async (req, res) => {
   const { _expand, articleId } = req.query;
   const pipeline: any[] = [{ $match: { articleId: articleId } }];
