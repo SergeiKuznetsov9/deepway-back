@@ -56,6 +56,8 @@ app.get("/articles", async (req, res) => {
 
   const { _expand, _sort, _page, _limit, _order, q, type } = req.query;
 
+  console.log({ _expand, _sort, _page, _limit, _order, q, type })
+
   const pipeline: any[] = [];
 
   if (type && type !== 'ALL') {
@@ -144,8 +146,6 @@ app.get("/articles", async (req, res) => {
             $convert: {
               input: "$userId",
               to: "objectId",
-              onError: "Invalid id",
-              onNull: null,
             },
           },
         },
@@ -193,8 +193,6 @@ app.get("/articles/:id", async (req, res) => {
               $convert: {
                 input: "$userId",
                 to: "objectId",
-                onError: "Invalid id",
-                onNull: null,
               },
             },
           },
@@ -322,8 +320,6 @@ app.get("/comments", async (req, res) => {
             $convert: {
               input: "$userId",
               to: "objectId",
-              onError: "Invalid id",
-              onNull: null,
             },
           },
         },
