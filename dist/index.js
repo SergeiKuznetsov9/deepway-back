@@ -55,6 +55,7 @@ app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let articles = [];
     const { _expand, _sort, _page, _limit, _order, q, type } = req.query;
+    console.log({ _expand, _sort, _page, _limit, _order, q, type });
     const pipeline = [];
     if (type && type !== 'ALL') {
         pipeline.push({
@@ -126,8 +127,6 @@ app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* (
                     $convert: {
                         input: "$userId",
                         to: "objectId",
-                        onError: "Invalid id",
-                        onNull: null,
                     },
                 },
             },
@@ -168,8 +167,6 @@ app.get("/articles/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
                         $convert: {
                             input: "$userId",
                             to: "objectId",
-                            onError: "Invalid id",
-                            onNull: null,
                         },
                     },
                 },
@@ -275,8 +272,6 @@ app.get("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* (
                     $convert: {
                         input: "$userId",
                         to: "objectId",
-                        onError: "Invalid id",
-                        onNull: null,
                     },
                 },
             },
