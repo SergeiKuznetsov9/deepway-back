@@ -193,14 +193,14 @@ app.get("/articles/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.status(500).json({ error: "Ошибка получения данных" });
     }
 }));
-app.get("/profile/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const profileId = req.params.id;
+app.get("/profile/:username", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const username = req.params.username;
     try {
-        const profile = (yield db_1.client
+        const profile = yield db_1.client
             .db("deepway")
             .collection("profile")
-            .aggregate([{ $match: { _id: new mongodb_1.ObjectId(profileId) } }])
-            .next());
+            .findOne({ username });
+        console.log(profile);
         res.json(profile);
     }
     catch (error) {
@@ -234,6 +234,20 @@ app.put("/profile/:id", (req, res) => __awaiter(void 0, void 0, void 0, function
     catch (error) {
         console.error("Ошибка обновления данных", error);
         res.status(500).json({ error: "Ошибка обновления данных" });
+    }
+}));
+app.get("/article-ratings", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId, articleId } = req.query;
+    try {
+        const articleRating = yield db_1.client
+            .db("deepway")
+            .collection("article-ratings")
+            .findOne({ userId, articleId });
+        res.status(200).json(articleRating);
+    }
+    catch (error) {
+        console.error("Ошибка получения данных", error);
+        res.status(500).json({ error: "Ошибка получения данных" });
     }
 }));
 app.get("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
