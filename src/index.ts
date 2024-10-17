@@ -32,8 +32,6 @@ app.get("/", (req, res) => {
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  console.log({ username, password });
-
   try {
     const user = await client
       .db("deepway")
@@ -142,7 +140,14 @@ app.get("/articles", async (req, res) => {
     pipeline.push(
       {
         $addFields: {
-          userIdObject: { $toObjectId: "$userId" },
+          userIdObject: {
+            $convert: {
+              input: "$userId",
+              to: "objectId",
+              onError: "Invalid id",
+              onNull: null,
+            },
+          },
         },
       },
       {
@@ -154,7 +159,7 @@ app.get("/articles", async (req, res) => {
         },
       },
       { $unwind: "$user" },
-      { $unset: ["userIdObject", "user.password"] }
+      { $unset: ["user.password"] }
     );
   }
 
@@ -167,6 +172,7 @@ app.get("/articles", async (req, res) => {
   } catch (error) {
     console.error("Ошибка чтения данных", error);
     res.status(500).json({ error: "Ошибка получения данных" });
+    return;
   }
 
   res.json(articles);
@@ -183,7 +189,14 @@ app.get("/articles/:id", async (req, res) => {
         { $match: { _id: new ObjectId(requestedId) } },
         {
           $addFields: {
-            userIdObject: { $toObjectId: "$userId" },
+            userIdObject: {
+              $convert: {
+                input: "$userId",
+                to: "objectId",
+                onError: "Invalid id",
+                onNull: null,
+              },
+            },
           },
         },
         {
@@ -272,7 +285,14 @@ app.get("/comments", async (req, res) => {
     pipeline.push(
       {
         $addFields: {
-          userIdObject: { $toObjectId: "$userId" },
+          userIdObject: {
+            $convert: {
+              input: "$userId",
+              to: "objectId",
+              onError: "Invalid id",
+              onNull: null,
+            },
+          },
         },
       },
 

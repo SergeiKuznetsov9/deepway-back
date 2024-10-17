@@ -33,7 +33,6 @@ app.get("/", (req, res) => {
 });
 app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = req.body;
-    console.log({ username, password });
     try {
         const user = yield db_1.client
             .db("deepway")
@@ -123,7 +122,14 @@ app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     if (_expand === "user") {
         pipeline.push({
             $addFields: {
-                userIdObject: { $toObjectId: "$userId" },
+                userIdObject: {
+                    $convert: {
+                        input: "$userId",
+                        to: "objectId",
+                        onError: "Invalid id",
+                        onNull: null,
+                    },
+                },
             },
         }, {
             $lookup: {
@@ -132,7 +138,7 @@ app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 foreignField: "_id",
                 as: "user",
             },
-        }, { $unwind: "$user" }, { $unset: ["userIdObject", "user.password"] });
+        }, { $unwind: "$user" }, { $unset: ["user.password"] });
     }
     try {
         articles = (yield db_1.client
@@ -144,6 +150,7 @@ app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         console.error("Ошибка чтения данных", error);
         res.status(500).json({ error: "Ошибка получения данных" });
+        return;
     }
     res.json(articles);
 }));
@@ -157,7 +164,14 @@ app.get("/articles/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
             { $match: { _id: new mongodb_1.ObjectId(requestedId) } },
             {
                 $addFields: {
-                    userIdObject: { $toObjectId: "$userId" },
+                    userIdObject: {
+                        $convert: {
+                            input: "$userId",
+                            to: "objectId",
+                            onError: "Invalid id",
+                            onNull: null,
+                        },
+                    },
                 },
             },
             {
@@ -228,7 +242,14 @@ app.get("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     if (_expand === "user") {
         pipeline.push({
             $addFields: {
-                userIdObject: { $toObjectId: "$userId" },
+                userIdObject: {
+                    $convert: {
+                        input: "$userId",
+                        to: "objectId",
+                        onError: "Invalid id",
+                        onNull: null,
+                    },
+                },
             },
         }, {
             $lookup: {
