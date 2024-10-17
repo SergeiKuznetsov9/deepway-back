@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const db_1 = require("./db");
+const mongodb_1 = require("mongodb");
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 app.use((req, res, next) => {
@@ -30,6 +31,27 @@ app.use(jsonBodyMiddleware);
 app.get("/", (req, res) => {
     res.json("Deepway is runing");
 });
+app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { username, password } = req.body;
+    try {
+        const user = yield db_1.client
+            .db("deepway")
+            .collection("users")
+            .findOne({ username, password }, { projection: { password: 0 } });
+        if (user) {
+            res.status(200).json(user);
+        }
+        else {
+            res
+                .status(404)
+                .json({ error: "Пользователь с таким именем и паролем не существует" });
+        }
+    }
+    catch (error) {
+        console.error("Ошибка сохранения данных", error);
+        res.status(500).json({ error: "Ошибка сохранения данных" });
+    }
+}));
 app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let articles = [];
     const { _expand, _sort, _page, _limit, _order, q, type } = req.query;
@@ -99,13 +121,24 @@ app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
     if (_expand === "user") {
         pipeline.push({
+            $addFields: {
+                userIdObject: {
+                    $convert: {
+                        input: "$userId",
+                        to: "objectId",
+                        onError: "Invalid id",
+                        onNull: null,
+                    },
+                },
+            },
+        }, {
             $lookup: {
                 from: "users",
-                localField: "userId",
-                foreignField: "id",
+                localField: "userIdObject",
+                foreignField: "_id",
                 as: "user",
             },
-        });
+        }, { $unwind: "$user" }, { $unset: ["user.password"] });
     }
     try {
         articles = (yield db_1.client
@@ -117,8 +150,143 @@ app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         console.error("Ошибка чтения данных", error);
         res.status(500).json({ error: "Ошибка получения данных" });
+        return;
     }
     res.json(articles);
+}));
+app.get("/articles/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const requestedId = req.params.id;
+    try {
+        const article = (yield db_1.client
+            .db("deepway")
+            .collection("articles")
+            .aggregate([
+            { $match: { _id: new mongodb_1.ObjectId(requestedId) } },
+            {
+                $addFields: {
+                    userIdObject: {
+                        $convert: {
+                            input: "$userId",
+                            to: "objectId",
+                            onError: "Invalid id",
+                            onNull: null,
+                        },
+                    },
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userIdObject",
+                    foreignField: "_id",
+                    as: "user",
+                },
+            },
+            { $unwind: "$user" },
+            { $unset: ["userIdObject", "user.password"] },
+        ])
+            .next());
+        res.json(article);
+    }
+    catch (error) {
+        console.error("Ошибка чтения данных", error);
+        res.status(500).json({ error: "Ошибка получения данных" });
+    }
+}));
+app.get("/profile/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const profileId = req.params.id;
+    try {
+        const profile = (yield db_1.client
+            .db("deepway")
+            .collection("profile")
+            .aggregate([{ $match: { _id: new mongodb_1.ObjectId(profileId) } }])
+            .next());
+        res.json(profile);
+    }
+    catch (error) {
+        console.error("Ошибка чтения данных", error);
+        res.status(500).json({ error: "Ошибка получения данных" });
+    }
+}));
+app.put("/profile/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id, age, avatar, city, country, currency, first, lastname, username, } = req.body;
+    try {
+        const result = yield db_1.client
+            .db("deepway")
+            .collection("profile")
+            .updateOne({ _id: new mongodb_1.ObjectId(id) }, {
+            $set: {
+                first,
+                lastname,
+                age,
+                currency,
+                country,
+                city,
+                username,
+                avatar,
+            },
+        });
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: "Профиль не найден" });
+        }
+        res.status(200).json({ message: "Профиль обновлён" });
+    }
+    catch (error) {
+        console.error("Ошибка обновления данных", error);
+        res.status(500).json({ error: "Ошибка обновления данных" });
+    }
+}));
+app.get("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { _expand, articleId } = req.query;
+    const pipeline = [{ $match: { articleId: articleId } }];
+    if (_expand === "user") {
+        pipeline.push({
+            $addFields: {
+                userIdObject: {
+                    $convert: {
+                        input: "$userId",
+                        to: "objectId",
+                        onError: "Invalid id",
+                        onNull: null,
+                    },
+                },
+            },
+        }, {
+            $lookup: {
+                from: "users",
+                localField: "userIdObject",
+                foreignField: "_id",
+                as: "user",
+            },
+        }, { $unwind: "$user" }, { $unset: ["userIdObject", "user.password"] });
+    }
+    try {
+        const comments = (yield db_1.client
+            .db("deepway")
+            .collection("comments")
+            .aggregate(pipeline)
+            .toArray());
+        res.json(comments);
+    }
+    catch (error) {
+        console.error("Ошибка чтения данных", error);
+        res.status(500).json({ error: "Ошибка получения данных" });
+    }
+}));
+app.post("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { articleId, userId, text } = req.body;
+    try {
+        const comment = { articleId, userId, text };
+        const result = yield db_1.client
+            .db("deepway")
+            .collection("comments")
+            .insertOne(comment);
+        res.status(201).json({ id: result.insertedId.toString() });
+    }
+    catch (error) {
+        console.error("Ошибка сохранения данных", error);
+        res.status(500).json({ error: "Ошибка сохранения данных" });
+    }
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, db_1.runDb)();

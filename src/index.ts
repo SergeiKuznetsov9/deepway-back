@@ -1,6 +1,6 @@
 import express from "express";
 import { client, runDb } from "./db";
-import { WithId, Document } from "mongodb";
+import { WithId, Document, ObjectId } from "mongodb";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,6 +27,28 @@ app.use(jsonBodyMiddleware);
 
 app.get("/", (req, res) => {
   res.json("Deepway is runing");
+});
+
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await client
+      .db("deepway")
+      .collection("users")
+      .findOne({ username, password }, { projection: { password: 0 } });
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res
+        .status(404)
+        .json({ error: "Пользователь с таким именем и паролем не существует" });
+    }
+  } catch (error) {
+    console.error("Ошибка сохранения данных", error);
+    res.status(500).json({ error: "Ошибка сохранения данных" });
+  }
 });
 
 app.get("/articles", async (req, res) => {
@@ -115,14 +137,30 @@ app.get("/articles", async (req, res) => {
   }
 
   if (_expand === "user") {
-    pipeline.push({
-      $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "id",
-        as: "user",
+    pipeline.push(
+      {
+        $addFields: {
+          userIdObject: {
+            $convert: {
+              input: "$userId",
+              to: "objectId",
+              onError: "Invalid id",
+              onNull: null,
+            },
+          },
+        },
       },
-    });
+      {
+        $lookup: {
+          from: "users",
+          localField: "userIdObject",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $unset: ["user.password"] }
+    );
   }
 
   try {
@@ -134,9 +172,171 @@ app.get("/articles", async (req, res) => {
   } catch (error) {
     console.error("Ошибка чтения данных", error);
     res.status(500).json({ error: "Ошибка получения данных" });
+    return;
   }
 
   res.json(articles);
+});
+
+app.get("/articles/:id", async (req, res) => {
+  const requestedId = req.params.id;
+
+  try {
+    const article = (await client
+      .db("deepway")
+      .collection("articles")
+      .aggregate([
+        { $match: { _id: new ObjectId(requestedId) } },
+        {
+          $addFields: {
+            userIdObject: {
+              $convert: {
+                input: "$userId",
+                to: "objectId",
+                onError: "Invalid id",
+                onNull: null,
+              },
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userIdObject",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        { $unwind: "$user" },
+        { $unset: ["userIdObject", "user.password"] },
+      ])
+      .next()) as WithId<Document>;
+    res.json(article);
+  } catch (error) {
+    console.error("Ошибка чтения данных", error);
+    res.status(500).json({ error: "Ошибка получения данных" });
+  }
+});
+
+app.get("/profile/:id", async (req, res) => {
+  const profileId = req.params.id;
+
+  try {
+    const profile = (await client
+      .db("deepway")
+      .collection("profile")
+      .aggregate([{ $match: { _id: new ObjectId(profileId) } }])
+      .next()) as WithId<Document>;
+    res.json(profile);
+  } catch (error) {
+    console.error("Ошибка чтения данных", error);
+    res.status(500).json({ error: "Ошибка получения данных" });
+  }
+});
+
+app.put("/profile/:id", async (req: any, res: any) => {
+  const {
+    id,
+    age,
+    avatar,
+    city,
+    country,
+    currency,
+    first,
+    lastname,
+    username,
+  } = req.body;
+
+  try {
+    const result = await client
+      .db("deepway")
+      .collection("profile")
+      .updateOne(
+        { _id: new ObjectId(id as string) },
+        {
+          $set: {
+            first,
+            lastname,
+            age,
+            currency,
+            country,
+            city,
+            username,
+            avatar,
+          },
+        }
+      );
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "Профиль не найден" });
+    }
+
+    res.status(200).json({ message: "Профиль обновлён" });
+  } catch (error) {
+    console.error("Ошибка обновления данных", error);
+    res.status(500).json({ error: "Ошибка обновления данных" });
+  }
+});
+
+app.get("/comments", async (req, res) => {
+  const { _expand, articleId } = req.query;
+  const pipeline: any[] = [{ $match: { articleId: articleId } }];
+
+  if (_expand === "user") {
+    pipeline.push(
+      {
+        $addFields: {
+          userIdObject: {
+            $convert: {
+              input: "$userId",
+              to: "objectId",
+              onError: "Invalid id",
+              onNull: null,
+            },
+          },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "userIdObject",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $unset: ["userIdObject", "user.password"] }
+    );
+  }
+
+  try {
+    const comments = (await client
+      .db("deepway")
+      .collection("comments")
+      .aggregate(pipeline)
+      .toArray()) as WithId<Document>[];
+    res.json(comments);
+  } catch (error) {
+    console.error("Ошибка чтения данных", error);
+    res.status(500).json({ error: "Ошибка получения данных" });
+  }
+});
+
+app.post("/comments", async (req, res) => {
+  const { articleId, userId, text } = req.body;
+
+  try {
+    const comment = { articleId, userId, text };
+    const result = await client
+      .db("deepway")
+      .collection("comments")
+      .insertOne(comment);
+
+    res.status(201).json({ id: result.insertedId.toString() });
+  } catch (error) {
+    console.error("Ошибка сохранения данных", error);
+    res.status(500).json({ error: "Ошибка сохранения данных" });
+  }
 });
 
 const startApp = async () => {
