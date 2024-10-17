@@ -58,7 +58,7 @@ app.get("/articles", async (req, res) => {
 
   const pipeline: any[] = [];
 
-  if (type) {
+  if (type && type !== 'ALL') {
     pipeline.push({
       $match: {
         type: type,
