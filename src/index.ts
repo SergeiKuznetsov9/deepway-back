@@ -56,11 +56,11 @@ app.get("/articles", async (req, res) => {
 
   const { _expand, _sort, _page, _limit, _order, q, type } = req.query;
 
-  console.log({ _expand, _sort, _page, _limit, _order, q, type })
+  console.log({ _expand, _sort, _page, _limit, _order, q, type });
 
   const pipeline: any[] = [];
 
-  if (type && type !== 'ALL') {
+  if (type && type !== "ALL") {
     pipeline.push({
       $match: {
         type: type,
@@ -365,6 +365,23 @@ app.post("/comments", async (req, res) => {
   } catch (error) {
     console.error("Ошибка сохранения данных", error);
     res.status(500).json({ error: "Ошибка сохранения данных" });
+  }
+});
+
+app.get("/notifications/:id", async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const notifications = await client
+      .db("deepway")
+      .collection("notifications")
+      .find({ userId })
+      .toArray();
+
+    res.json(notifications);
+  } catch (error) {
+    console.error("Ошибка чтения данных", error);
+    res.status(500).json({ error: "Ошибка получения данных" });
   }
 });
 
