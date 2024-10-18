@@ -57,7 +57,7 @@ app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const { _expand, _sort, _page, _limit, _order, q, type } = req.query;
     console.log({ _expand, _sort, _page, _limit, _order, q, type });
     const pipeline = [];
-    if (type && type !== 'ALL') {
+    if (type && type !== "ALL") {
         pipeline.push({
             $match: {
                 type: type,
@@ -310,6 +310,21 @@ app.post("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     catch (error) {
         console.error("Ошибка сохранения данных", error);
         res.status(500).json({ error: "Ошибка сохранения данных" });
+    }
+}));
+app.get("/notifications/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.id;
+    try {
+        const notifications = yield db_1.client
+            .db("deepway")
+            .collection("notifications")
+            .find({ userId })
+            .toArray();
+        res.json(notifications);
+    }
+    catch (error) {
+        console.error("Ошибка чтения данных", error);
+        res.status(500).json({ error: "Ошибка получения данных" });
     }
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
