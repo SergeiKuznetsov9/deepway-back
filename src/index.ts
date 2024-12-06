@@ -218,7 +218,7 @@ app.get("/articles/:id", async (req, res) => {
 
 app.get("/profile/:userId", async (req, res) => {
   const userId = req.params.userId;
-  console.log(userId)
+  console.log("USER_ID", userId)
 
   try {
     const profile = await client
