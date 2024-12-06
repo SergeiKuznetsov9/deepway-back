@@ -216,14 +216,14 @@ app.get("/articles/:id", async (req, res) => {
   }
 });
 
-app.get("/profile/:username", async (req, res) => {
-  const username = req.params.username;
+app.get("/profile/:userId", async (req, res) => {
+  const userId = req.params.userId;
 
   try {
     const profile = await client
       .db("deepway")
       .collection("profile")
-      .findOne({ username });
+      .findOne({ userId });
     console.log(profile);
     res.json(profile);
   } catch (error) {
