@@ -190,13 +190,14 @@ app.get("/articles/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.status(500).json({ error: "Ошибка получения данных" });
     }
 }));
-app.get("/profile/:username", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const username = req.params.username;
+app.get("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.userId;
+    console.log("USER_ID", userId);
     try {
         const profile = yield db_1.client
             .db("deepway")
             .collection("profile")
-            .findOne({ username });
+            .findOne({ userId });
         console.log(profile);
         res.json(profile);
     }
