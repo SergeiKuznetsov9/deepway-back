@@ -56,8 +56,6 @@ app.get("/articles", async (req, res) => {
 
   const { _expand, _sort, _page, _limit, _order, q, type } = req.query;
 
-  console.log({ _expand, _sort, _page, _limit, _order, q, type });
-
   const pipeline: any[] = [];
 
   if (type && type !== "ALL") {
@@ -218,14 +216,12 @@ app.get("/articles/:id", async (req, res) => {
 
 app.get("/profile/:userId", async (req, res) => {
   const userId = req.params.userId;
-  console.log("USER_ID", userId)
 
   try {
     const profile = await client
       .db("deepway")
       .collection("profile")
       .findOne({ userId });
-    console.log(profile);
     res.json(profile);
   } catch (error) {
     console.error("Ошибка чтения данных", error);
@@ -233,7 +229,7 @@ app.get("/profile/:userId", async (req, res) => {
   }
 });
 
-app.put("/profile/:id", async (req: any, res: any) => {
+app.put("/profile/:userId", async (req: any, res: any) => {
   const {
     id,
     age,
@@ -247,24 +243,23 @@ app.put("/profile/:id", async (req: any, res: any) => {
   } = req.body;
 
   try {
-    const result = await client
-      .db("deepway")
-      .collection("profile")
-      .updateOne(
-        { _id: new ObjectId(id as string) },
-        {
-          $set: {
-            first,
-            lastname,
-            age,
-            currency,
-            country,
-            city,
-            username,
-            avatar,
-          },
-        }
-      );
+    const userId = req.params.userId;
+
+    const result = await client.db("deepway").collection("profile").updateOne(
+      { userId },
+      {
+        $set: {
+          first,
+          lastname,
+          age,
+          currency,
+          country,
+          city,
+          username,
+          avatar,
+        },
+      }
+    );
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Профиль не найден" });
     }

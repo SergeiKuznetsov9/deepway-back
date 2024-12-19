@@ -55,7 +55,6 @@ app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let articles = [];
     const { _expand, _sort, _page, _limit, _order, q, type } = req.query;
-    console.log({ _expand, _sort, _page, _limit, _order, q, type });
     const pipeline = [];
     if (type && type !== "ALL") {
         pipeline.push({
@@ -192,13 +191,11 @@ app.get("/articles/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
 }));
 app.get("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
-    console.log("USER_ID", userId);
     try {
         const profile = yield db_1.client
             .db("deepway")
             .collection("profile")
             .findOne({ userId });
-        console.log(profile);
         res.json(profile);
     }
     catch (error) {
@@ -206,13 +203,11 @@ app.get("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(500).json({ error: "Ошибка получения данных" });
     }
 }));
-app.put("/profile/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.put("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id, age, avatar, city, country, currency, first, lastname, username, } = req.body;
     try {
-        const result = yield db_1.client
-            .db("deepway")
-            .collection("profile")
-            .updateOne({ _id: new mongodb_1.ObjectId(id) }, {
+        const userId = req.params.userId;
+        const result = yield db_1.client.db("deepway").collection("profile").updateOne({ userId }, {
             $set: {
                 first,
                 lastname,
