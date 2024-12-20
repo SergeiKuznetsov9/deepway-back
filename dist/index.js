@@ -22,22 +22,23 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept");
     if (req.method === "OPTIONS") {
-        return res.sendStatus(204);
+        res.sendStatus(204);
+        return;
     }
     next();
 });
 const jsonBodyMiddleware = express_1.default.json();
 app.use(jsonBodyMiddleware);
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
     res.json("Deepway is runing");
 });
 app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = req.body;
     try {
-        const user = yield db_1.client
+        const user = (yield db_1.client
             .db("deepway")
             .collection("users")
-            .findOne({ username, password }, { projection: { password: 0 } });
+            .findOne({ username, password }, { projection: { password: 0 } }));
         if (user) {
             res.status(200).json(user);
         }
@@ -192,10 +193,10 @@ app.get("/articles/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
 app.get("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
     try {
-        const profile = yield db_1.client
+        const profile = (yield db_1.client
             .db("deepway")
             .collection("profile")
-            .findOne({ userId });
+            .findOne({ userId }));
         res.json(profile);
     }
     catch (error) {
@@ -204,7 +205,7 @@ app.get("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 }));
 app.put("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id, age, avatar, city, country, currency, first, lastname, username, } = req.body;
+    const { age, avatar, city, country, currency, first, lastname, username } = req.body;
     try {
         const userId = req.params.userId;
         const result = yield db_1.client.db("deepway").collection("profile").updateOne({ userId }, {
@@ -220,7 +221,8 @@ app.put("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, func
             },
         });
         if (result.matchedCount === 0) {
-            return res.status(404).json({ error: "Профиль не найден" });
+            res.status(404).json({ error: "Профиль не найден" });
+            return;
         }
         res.status(200).json({ message: "Профиль обновлён" });
     }
@@ -232,10 +234,10 @@ app.put("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, func
 app.get("/article-ratings", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId, articleId } = req.query;
     try {
-        const articleRating = yield db_1.client
+        const articleRating = (yield db_1.client
             .db("deepway")
             .collection("article-ratings")
-            .findOne({ userId, articleId });
+            .findOne({ userId, articleId }));
         res.status(200).json(articleRating);
     }
     catch (error) {
@@ -251,7 +253,7 @@ app.post("/article-ratings", (req, res) => __awaiter(void 0, void 0, void 0, fun
             .db("deepway")
             .collection("article-ratings")
             .insertOne(rating);
-        res.status(201).json({ id: result.insertedId.toString() });
+        res.status(201).json({ _id: result.insertedId.toString() });
     }
     catch (error) {
         console.error("Ошибка сохранения данных", error);
@@ -301,21 +303,21 @@ app.post("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             .db("deepway")
             .collection("comments")
             .insertOne(comment);
-        res.status(201).json({ id: result.insertedId.toString() });
+        res.status(201).json({ _id: result.insertedId.toString() });
     }
     catch (error) {
         console.error("Ошибка сохранения данных", error);
         res.status(500).json({ error: "Ошибка сохранения данных" });
     }
 }));
-app.get("/notifications/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.params.id;
+app.get("/notifications/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
     try {
-        const notifications = yield db_1.client
+        const notifications = (yield db_1.client
             .db("deepway")
             .collection("notifications")
             .find({ userId })
-            .toArray();
+            .toArray());
         res.json(notifications);
     }
     catch (error) {
