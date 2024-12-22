@@ -1,4 +1,4 @@
-import { Express, Response } from "express";
+import express, { Response } from "express";
 import { MongoClient, ObjectId } from "mongodb";
 
 import {
@@ -9,9 +9,11 @@ import {
 import { ErrorMessage } from "../types/models/messages";
 import { RequestWithParams, RequestWithQuery } from "../types/types";
 
-export const addArticleRoutes = (app: Express, client: MongoClient) => {
-  app.get(
-    "/articles",
+export const getArticleRoutes = (client: MongoClient) => {
+  const articlesRouter = express.Router();
+
+  articlesRouter.get(
+    "/",
     async (
       req: RequestWithQuery<ArticlesGetQuery>,
       res: Response<Article[] | ErrorMessage>
@@ -141,8 +143,8 @@ export const addArticleRoutes = (app: Express, client: MongoClient) => {
     }
   );
 
-  app.get(
-    "/articles/:id",
+  articlesRouter.get(
+    "/:id",
     async (
       req: RequestWithParams<ArticleGetParams>,
       res: Response<Article | ErrorMessage>
@@ -184,4 +186,6 @@ export const addArticleRoutes = (app: Express, client: MongoClient) => {
       }
     }
   );
+
+  return articlesRouter;
 };

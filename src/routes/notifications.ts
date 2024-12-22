@@ -1,4 +1,4 @@
-import { Express, Response } from "express";
+import express, { Response } from "express";
 import { MongoClient } from "mongodb";
 
 import { ErrorMessage } from "../types/models/messages";
@@ -8,9 +8,11 @@ import {
   NotificationGetParams,
 } from "../types/models/notification";
 
-export const addNotificationsRoutes = (app: Express, client: MongoClient) => {
-  app.get(
-    "/notifications/:userId",
+export const getNotificationsRoutes = (client: MongoClient) => {
+  const notificationsRoutes = express.Router();
+
+  notificationsRoutes.get(
+    "/:userId",
     async (
       req: RequestWithParams<NotificationGetParams>,
       res: Response<Notification[] | ErrorMessage>
@@ -31,4 +33,6 @@ export const addNotificationsRoutes = (app: Express, client: MongoClient) => {
       }
     }
   );
+
+  return notificationsRoutes;
 };

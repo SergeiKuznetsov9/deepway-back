@@ -1,13 +1,15 @@
-import { Express, Response } from "express";
+import express, { Response } from "express";
 import { MongoClient } from "mongodb";
 
 import { ErrorMessage, MessageWithEntityId } from "../types/models/messages";
 import { RequestWithBody, RequestWithQuery } from "../types/types";
 import { CommentGetQuery, CommentPostBody } from "../types/models/comment";
 
-export const addCommentsRoutes = (app: Express, client: MongoClient) => {
-  app.get(
-    "/comments",
+export const getCommentsRoutes = (client: MongoClient) => {
+  const commentsRoutes = express.Router();
+
+  commentsRoutes.get(
+    "/",
     async (
       req: RequestWithQuery<CommentGetQuery>,
       res: Response<Comment[] | ErrorMessage>
@@ -55,8 +57,8 @@ export const addCommentsRoutes = (app: Express, client: MongoClient) => {
     }
   );
 
-  app.post(
-    "/comments",
+  commentsRoutes.post(
+    "/",
     async (
       req: RequestWithBody<CommentPostBody>,
       res: Response<MessageWithEntityId | ErrorMessage>
@@ -77,4 +79,6 @@ export const addCommentsRoutes = (app: Express, client: MongoClient) => {
       }
     }
   );
+
+  return commentsRoutes;
 };

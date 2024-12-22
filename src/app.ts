@@ -1,10 +1,10 @@
 import express, { Express, Request, Response, NextFunction } from "express";
 import { getLoginRoutes } from "./routes/login";
-import { addArticleRoutes } from "./routes/articles";
-import { addProfileRoutes } from "./routes/profile";
-import { addArticleRatingsRoutes } from "./routes/article-ratings";
-import { addCommentsRoutes } from "./routes/comments";
-import { addNotificationsRoutes } from "./routes/notifications";
+import { getArticleRoutes } from "./routes/articles";
+import { getProfileRoutes } from "./routes/profile";
+import { getArticleRatingsRoutes } from "./routes/article-ratings";
+import { getCommentsRoutes } from "./routes/comments";
+import { getNotificationsRoutes } from "./routes/notifications";
 import { client } from "./db";
 
 export const app: Express = express();
@@ -35,11 +35,9 @@ app.get("/", (_, res: Response<string>) => {
   res.json("Deepway is runing");
 });
 
-const loginRoutes = getLoginRoutes(client);
-app.use("/login", loginRoutes);
-
-addArticleRoutes(app, client);
-addProfileRoutes(app, client);
-addArticleRatingsRoutes(app, client);
-addCommentsRoutes(app, client);
-addNotificationsRoutes(app, client);
+app.use("/login", getLoginRoutes(client));
+app.use("/articles", getArticleRoutes(client));
+app.use("/profile", getProfileRoutes(client));
+app.use("/article-ratings", getArticleRatingsRoutes(client));
+app.use("/comments", getCommentsRoutes(client));
+app.use("/notifications", getNotificationsRoutes(client));
