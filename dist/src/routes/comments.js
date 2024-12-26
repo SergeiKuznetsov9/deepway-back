@@ -8,10 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addCommentsRoutes = void 0;
-const addCommentsRoutes = (app, client) => {
-    app.get("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getCommentsRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const getCommentsRoutes = (client, mongoDbName) => {
+    const commentsRoutes = express_1.default.Router();
+    commentsRoutes.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { _expand, articleId } = req.query;
         const pipeline = [{ $match: { articleId: articleId } }];
         if (_expand === "user") {
@@ -35,7 +40,7 @@ const addCommentsRoutes = (app, client) => {
         }
         try {
             const comments = (yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("comments")
                 .aggregate(pipeline)
                 .toArray());
@@ -46,12 +51,12 @@ const addCommentsRoutes = (app, client) => {
             res.status(500).json({ error: "Ошибка получения данных" });
         }
     }));
-    app.post("/comments", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    commentsRoutes.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { articleId, userId, text } = req.body;
         try {
             const comment = { articleId, userId, text };
             const result = yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("comments")
                 .insertOne(comment);
             res.status(201).json({ _id: result.insertedId.toString() });
@@ -61,5 +66,6 @@ const addCommentsRoutes = (app, client) => {
             res.status(500).json({ error: "Ошибка сохранения данных" });
         }
     }));
+    return commentsRoutes;
 };
-exports.addCommentsRoutes = addCommentsRoutes;
+exports.getCommentsRoutes = getCommentsRoutes;

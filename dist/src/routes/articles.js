@@ -8,11 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addArticleRoutes = void 0;
+exports.getArticleRoutes = void 0;
+const express_1 = __importDefault(require("express"));
 const mongodb_1 = require("mongodb");
-const addArticleRoutes = (app, client) => {
-    app.get("/articles", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getArticleRoutes = (client, mongoDbName) => {
+    const articlesRouter = express_1.default.Router();
+    articlesRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         let articles = [];
         const { _expand, _sort, _page, _limit, _order, q, type } = req.query;
         const pipeline = [];
@@ -100,7 +105,7 @@ const addArticleRoutes = (app, client) => {
         }
         try {
             articles = (yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("articles")
                 .aggregate(pipeline)
                 .toArray());
@@ -112,11 +117,11 @@ const addArticleRoutes = (app, client) => {
         }
         res.json(articles);
     }));
-    app.get("/articles/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    articlesRouter.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const requestedId = req.params.id;
         try {
             const article = (yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("articles")
                 .aggregate([
                 { $match: { _id: new mongodb_1.ObjectId(requestedId) } },
@@ -149,5 +154,6 @@ const addArticleRoutes = (app, client) => {
             res.status(500).json({ error: "Ошибка получения данных" });
         }
     }));
+    return articlesRouter;
 };
-exports.addArticleRoutes = addArticleRoutes;
+exports.getArticleRoutes = getArticleRoutes;

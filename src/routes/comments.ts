@@ -5,7 +5,7 @@ import { ErrorMessage, MessageWithEntityId } from "../types/models/messages";
 import { RequestWithBody, RequestWithQuery } from "../types/types";
 import { CommentGetQuery, CommentPostBody } from "../types/models/comment";
 
-export const getCommentsRoutes = (client: MongoClient) => {
+export const getCommentsRoutes = (client: MongoClient, mongoDbName: string) => {
   const commentsRoutes = express.Router();
 
   commentsRoutes.get(
@@ -45,7 +45,7 @@ export const getCommentsRoutes = (client: MongoClient) => {
 
       try {
         const comments = (await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("comments")
           .aggregate(pipeline)
           .toArray()) as Comment[];
@@ -68,7 +68,7 @@ export const getCommentsRoutes = (client: MongoClient) => {
       try {
         const comment = { articleId, userId, text };
         const result = await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("comments")
           .insertOne(comment);
 

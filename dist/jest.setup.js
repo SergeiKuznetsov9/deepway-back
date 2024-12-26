@@ -8,14 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const app_1 = require("./app");
-const db_1 = require("./db");
-const port = process.env.PORT || 3000;
-const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, db_1.runDb)();
-    app_1.app.listen(port, () => {
-        console.log(`Deepway app is listening on port ${port}`);
-    });
+exports.initTestDB = void 0;
+const dotenv_1 = __importDefault(require("dotenv"));
+const app_1 = require("./src/app");
+const db_1 = require("./src/db/db");
+dotenv_1.default.config({ path: ".env.test" });
+const mongoDbName = process.env.MONGO_DB_NAME || "";
+const initTestDB = () => __awaiter(void 0, void 0, void 0, function* () {
+    const client = yield (0, db_1.runDb)();
+    const app = (0, app_1.createApp)(client, mongoDbName);
+    const db = client.db(mongoDbName);
+    return { app, db };
 });
-startApp();
+exports.initTestDB = initTestDB;

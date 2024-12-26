@@ -8,14 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addProfileRoutes = void 0;
-const addProfileRoutes = (app, client) => {
-    app.get("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getProfileRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const getProfileRoutes = (client, mongoDbName) => {
+    const profileRoutes = express_1.default.Router();
+    profileRoutes.get("/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const userId = req.params.userId;
         try {
             const profile = (yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("profile")
                 .findOne({ userId }));
             res.json(profile);
@@ -25,12 +30,12 @@ const addProfileRoutes = (app, client) => {
             res.status(500).json({ error: "Ошибка получения данных" });
         }
     }));
-    app.put("/profile/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    profileRoutes.put("/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { age, avatar, city, country, currency, first, lastname, username, } = req.body;
         try {
             const userId = req.params.userId;
             const result = yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("profile")
                 .updateOne({ userId }, {
                 $set: {
@@ -55,5 +60,6 @@ const addProfileRoutes = (app, client) => {
             res.status(500).json({ error: "Ошибка обновления данных" });
         }
     }));
+    return profileRoutes;
 };
-exports.addProfileRoutes = addProfileRoutes;
+exports.getProfileRoutes = getProfileRoutes;

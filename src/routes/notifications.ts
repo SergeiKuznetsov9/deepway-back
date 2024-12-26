@@ -8,7 +8,10 @@ import {
   NotificationGetParams,
 } from "../types/models/notification";
 
-export const getNotificationsRoutes = (client: MongoClient) => {
+export const getNotificationsRoutes = (
+  client: MongoClient,
+  mongoDbName: string
+) => {
   const notificationsRoutes = express.Router();
 
   notificationsRoutes.get(
@@ -21,7 +24,7 @@ export const getNotificationsRoutes = (client: MongoClient) => {
 
       try {
         const notifications = (await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("notifications")
           .find({ userId })
           .toArray()) as Notification[];

@@ -9,7 +9,12 @@ import {
   ArticleRatingPostBody,
 } from "../types/models/article-rating";
 
-export const getArticleRatingsRoutes = (client: MongoClient) => {
+export const MONGO_DB_NAME = process.env.MONGO_DB_NAME;
+
+export const getArticleRatingsRoutes = (
+  client: MongoClient,
+  mongoDbName: string
+) => {
   const articleRatingsRoutes = express.Router();
 
   articleRatingsRoutes.get(
@@ -22,7 +27,7 @@ export const getArticleRatingsRoutes = (client: MongoClient) => {
 
       try {
         const articleRating = (await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("article-ratings")
           .findOne({ userId, articleId })) as ArticleRating;
 
@@ -45,7 +50,7 @@ export const getArticleRatingsRoutes = (client: MongoClient) => {
 
       try {
         const result = await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("article-ratings")
           .insertOne(rating);
 

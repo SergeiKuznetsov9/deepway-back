@@ -4,7 +4,7 @@ import { MongoClient } from "mongodb";
 import { ErrorMessage } from "../types/models/messages";
 import { User } from "../types/models/user";
 
-export const getLoginRoutes = (client: MongoClient) => {
+export const getLoginRoutes = (client: MongoClient, mongoDbName: string) => {
   const loginRouter = express.Router();
 
   loginRouter.post(
@@ -14,7 +14,7 @@ export const getLoginRoutes = (client: MongoClient) => {
 
       try {
         const user = (await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("users")
           .findOne(
             { username, password },

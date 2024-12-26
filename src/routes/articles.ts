@@ -9,7 +9,7 @@ import {
 import { ErrorMessage } from "../types/models/messages";
 import { RequestWithParams, RequestWithQuery } from "../types/types";
 
-export const getArticleRoutes = (client: MongoClient) => {
+export const getArticleRoutes = (client: MongoClient, mongoDbName: string) => {
   const articlesRouter = express.Router();
 
   articlesRouter.get(
@@ -129,7 +129,7 @@ export const getArticleRoutes = (client: MongoClient) => {
 
       try {
         articles = (await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("articles")
           .aggregate(pipeline)
           .toArray()) as Article[];
@@ -153,7 +153,7 @@ export const getArticleRoutes = (client: MongoClient) => {
 
       try {
         const article = (await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("articles")
           .aggregate([
             { $match: { _id: new ObjectId(requestedId) } },

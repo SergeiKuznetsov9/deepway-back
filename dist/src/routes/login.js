@@ -14,13 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLoginRoutes = void 0;
 const express_1 = __importDefault(require("express"));
-const getLoginRoutes = (client) => {
+const getLoginRoutes = (client, mongoDbName) => {
     const loginRouter = express_1.default.Router();
     loginRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { username, password } = req.body;
         try {
             const user = (yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("users")
                 .findOne({ username, password }, { projection: { password: 0 } }));
             if (user) {

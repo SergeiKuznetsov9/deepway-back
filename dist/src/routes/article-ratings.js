@@ -8,14 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addArticleRatingsRoutes = void 0;
-const addArticleRatingsRoutes = (app, client) => {
-    app.get("/article-ratings", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getArticleRatingsRoutes = exports.MONGO_DB_NAME = void 0;
+const express_1 = __importDefault(require("express"));
+exports.MONGO_DB_NAME = process.env.MONGO_DB_NAME;
+const getArticleRatingsRoutes = (client, mongoDbName) => {
+    const articleRatingsRoutes = express_1.default.Router();
+    articleRatingsRoutes.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { userId, articleId } = req.query;
         try {
             const articleRating = (yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("article-ratings")
                 .findOne({ userId, articleId }));
             res.status(200).json(articleRating);
@@ -25,12 +31,12 @@ const addArticleRatingsRoutes = (app, client) => {
             res.status(500).json({ error: "Ошибка получения данных" });
         }
     }));
-    app.post("/article-ratings", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    articleRatingsRoutes.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { articleId, userId, rate, feedback } = req.body;
         const rating = { articleId, userId, rate, feedback };
         try {
             const result = yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("article-ratings")
                 .insertOne(rating);
             res.status(201).json({ _id: result.insertedId.toString() });
@@ -40,5 +46,6 @@ const addArticleRatingsRoutes = (app, client) => {
             res.status(500).json({ error: "Ошибка сохранения данных" });
         }
     }));
+    return articleRatingsRoutes;
 };
-exports.addArticleRatingsRoutes = addArticleRatingsRoutes;
+exports.getArticleRatingsRoutes = getArticleRatingsRoutes;

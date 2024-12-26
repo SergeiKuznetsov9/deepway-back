@@ -10,7 +10,7 @@ import {
   ProfilePutParams,
 } from "../types/models/profile";
 
-export const getProfileRoutes = (client: MongoClient) => {
+export const getProfileRoutes = (client: MongoClient, mongoDbName: string) => {
   const profileRoutes = express.Router();
 
   profileRoutes.get(
@@ -23,7 +23,7 @@ export const getProfileRoutes = (client: MongoClient) => {
 
       try {
         const profile = (await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("profile")
           .findOne({ userId })) as Profile;
         res.json(profile);
@@ -55,7 +55,7 @@ export const getProfileRoutes = (client: MongoClient) => {
         const userId = req.params.userId;
 
         const result = await client
-          .db("deepway")
+          .db(mongoDbName)
           .collection("profile")
           .updateOne(
             { userId },

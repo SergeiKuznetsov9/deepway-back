@@ -8,14 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addNotificationsRoutes = void 0;
-const addNotificationsRoutes = (app, client) => {
-    app.get("/notifications/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getNotificationsRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const getNotificationsRoutes = (client, mongoDbName) => {
+    const notificationsRoutes = express_1.default.Router();
+    notificationsRoutes.get("/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { userId } = req.params;
         try {
             const notifications = (yield client
-                .db("deepway")
+                .db(mongoDbName)
                 .collection("notifications")
                 .find({ userId })
                 .toArray());
@@ -26,5 +31,6 @@ const addNotificationsRoutes = (app, client) => {
             res.status(500).json({ error: "Ошибка получения данных" });
         }
     }));
+    return notificationsRoutes;
 };
-exports.addNotificationsRoutes = addNotificationsRoutes;
+exports.getNotificationsRoutes = getNotificationsRoutes;
