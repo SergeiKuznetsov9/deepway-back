@@ -1,4 +1,4 @@
-import express, { Response } from "express";
+import { Router, Response } from "express";
 import { MongoClient } from "mongodb";
 
 import { ErrorMessage, SuccessMessage } from "../types/models/messages";
@@ -10,10 +10,10 @@ import {
   ProfilePutParams,
 } from "../types/models/profile";
 
-export const getProfileRoutes = (client: MongoClient, mongoDbName: string) => {
-  const profileRoutes = express.Router();
+export const getProfileRouter = (client: MongoClient, mongoDbName: string) => {
+  const router = Router();
 
-  profileRoutes.get(
+  router.get(
     "/:userId",
     async (
       req: RequestWithParams<ProfileGetParams>,
@@ -34,7 +34,7 @@ export const getProfileRoutes = (client: MongoClient, mongoDbName: string) => {
     }
   );
 
-  profileRoutes.put(
+  router.put(
     "/:userId",
     async (
       req: RequestWithParamsAndBody<ProfilePutParams, ProfilePutBody>,
@@ -85,5 +85,5 @@ export const getProfileRoutes = (client: MongoClient, mongoDbName: string) => {
     }
   );
 
-  return profileRoutes;
+  return router;
 };

@@ -1,10 +1,10 @@
 import express, { Express, Request, Response, NextFunction } from "express";
-import { getLoginRoutes } from "./routes/login";
-import { getArticleRoutes } from "./routes/articles";
-import { getProfileRoutes } from "./routes/profile";
-import { getArticleRatingsRoutes } from "./routes/article-ratings";
-import { getCommentsRoutes } from "./routes/comments";
-import { getNotificationsRoutes } from "./routes/notifications";
+import { getLoginRouter } from "./routers/login";
+import { getArticleRouter } from "./routers/articles";
+import { getProfileRouter } from "./routers/profile";
+import { getArticleRatingsRouter } from "./routers/article-ratings";
+import { getCommentsRouter } from "./routers/comments";
+import { getNotificationsRouter } from "./routers/notifications";
 import { MongoClient } from "mongodb";
 
 export const createApp = (
@@ -38,12 +38,12 @@ export const createApp = (
     res.json("Deepway is runing");
   });
 
-  app.use("/login", getLoginRoutes(client, mongoDbName));
-  app.use("/articles", getArticleRoutes(client, mongoDbName));
-  app.use("/profile", getProfileRoutes(client, mongoDbName));
-  app.use("/article-ratings", getArticleRatingsRoutes(client, mongoDbName));
-  app.use("/comments", getCommentsRoutes(client, mongoDbName));
-  app.use("/notifications", getNotificationsRoutes(client, mongoDbName));
+  app.use("/login", getLoginRouter(client, mongoDbName));
+  app.use("/articles", getArticleRouter(client, mongoDbName));
+  app.use("/profile", getProfileRouter(client, mongoDbName));
+  app.use("/article-ratings", getArticleRatingsRouter(client, mongoDbName));
+  app.use("/comments", getCommentsRouter(client, mongoDbName));
+  app.use("/notifications", getNotificationsRouter(client, mongoDbName));
 
   return app;
 };

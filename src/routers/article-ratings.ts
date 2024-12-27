@@ -1,4 +1,4 @@
-import express, { Response } from "express";
+import { Response, Router } from "express";
 import { MongoClient } from "mongodb";
 
 import { ErrorMessage, MessageWithEntityId } from "../types/models/messages";
@@ -11,13 +11,13 @@ import {
 
 export const MONGO_DB_NAME = process.env.MONGO_DB_NAME;
 
-export const getArticleRatingsRoutes = (
+export const getArticleRatingsRouter = (
   client: MongoClient,
   mongoDbName: string
 ) => {
-  const articleRatingsRoutes = express.Router();
+  const router = Router();
 
-  articleRatingsRoutes.get(
+  router.get(
     "/",
     async (
       req: RequestWithQuery<ArticleRatingGetQuery>,
@@ -39,7 +39,7 @@ export const getArticleRatingsRoutes = (
     }
   );
 
-  articleRatingsRoutes.post(
+  router.post(
     "/",
     async (
       req: RequestWithBody<ArticleRatingPostBody>,
@@ -62,5 +62,5 @@ export const getArticleRatingsRoutes = (
     }
   );
 
-  return articleRatingsRoutes;
+  return router;
 };

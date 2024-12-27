@@ -1,14 +1,14 @@
-import express, { Response } from "express";
+import { Response, Router } from "express";
 import { MongoClient } from "mongodb";
 
 import { ErrorMessage, MessageWithEntityId } from "../types/models/messages";
 import { RequestWithBody, RequestWithQuery } from "../types/types";
 import { CommentGetQuery, CommentPostBody } from "../types/models/comment";
 
-export const getCommentsRoutes = (client: MongoClient, mongoDbName: string) => {
-  const commentsRoutes = express.Router();
+export const getCommentsRouter = (client: MongoClient, mongoDbName: string) => {
+  const router = Router();
 
-  commentsRoutes.get(
+  router.get(
     "/",
     async (
       req: RequestWithQuery<CommentGetQuery>,
@@ -57,7 +57,7 @@ export const getCommentsRoutes = (client: MongoClient, mongoDbName: string) => {
     }
   );
 
-  commentsRoutes.post(
+  router.post(
     "/",
     async (
       req: RequestWithBody<CommentPostBody>,
@@ -80,5 +80,5 @@ export const getCommentsRoutes = (client: MongoClient, mongoDbName: string) => {
     }
   );
 
-  return commentsRoutes;
+  return router;
 };
