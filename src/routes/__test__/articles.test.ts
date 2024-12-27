@@ -2,25 +2,221 @@ import request from "supertest";
 import { Db } from "mongodb";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
+import { getUsersMocks } from "../../mocks/users";
+import { getArticlesMocks } from "../../mocks/articles";
+import { Article, ArticlesGetQuery } from "../../types/models/article";
+
+const checkRightNumberSubsequence = (
+  order: "asc" | "desc",
+  checkingArray: number[]
+) =>
+  checkingArray.every((number, index) => {
+    if (index > 0 && order === "asc") {
+      return number >= checkingArray[index - 1];
+    }
+
+    if (index > 0 && order === "desc") {
+      return number <= checkingArray[index - 1];
+    }
+
+    return true;
+  });
 
 let app: ReturnType<typeof createApp>;
 
 beforeAll(async () => {
   let db: Db;
   ({ app, db } = await initTestDB());
-  await db.collection("articles").deleteMany({});
-  await db.collection("articles").insertOne({ name: "testingArticle" });
-
-  const insertedArticle = await db
-    .collection("articles")
-    .findOne({ name: "testingArticle" });
-  console.log("Inserted article:", insertedArticle);
+  await db.collection("articles").insertMany(getArticlesMocks());
+  await db.collection("users").insertMany(getUsersMocks());
 });
 
-describe("User API", () => {
-  it("GET /user - should return all users", async () => {
+describe("Articles API", () => {
+  it("GET /articles", async () => {
     const res = await request(app).get("/articles");
-    console.log("RESS", res.body);
-    expect(1).toBe(1);
+    expect(res.body.length).toBe(21);
+  });
+
+  it("GET /articles?_limit=9", async () => {
+    const query = {
+      _limit: 9,
+    };
+    const res = await request(app).get("/articles").query(query);
+    expect(res.body.length).toBe(9);
+  });
+
+  it("GET /articles?_limit=9&_page=2", async () => {
+    const query = {
+      _limit: 3,
+      _page: 2,
+    };
+    const correctResultsIds = [
+      "670e4a0655e53c8e6099fcf5",
+      "670e4a0655e53c8e6099fcf6",
+      "670e4a0655e53c8e6099fcf7",
+    ];
+    const res = await request(app).get("/articles").query(query);
+    const resIdsArray = res.body.map((article: Article) => article._id);
+    expect(resIdsArray).toEqual(correctResultsIds);
+  });
+
+  it("GET /articles?_expand=user", async () => {
+    const query = {
+      _expand: "user",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const isUserInArticle = res.body.every(
+      (article: Article) => "user" in article
+    );
+    expect(isUserInArticle).toBe(true);
+  });
+
+  it("GET /articles?_expand=user1", async () => {
+    const query = {
+      _expand: "user1",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const isUserInArticle = res.body.some(
+      (article: Article) => "user" in article
+    );
+    expect(isUserInArticle).toBe(false);
+  });
+
+  it("GET /articles?q=reac", async () => {
+    const query = {
+      q: "reac",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const isQMatchesWithResult = res.body.every((article: Article) =>
+      article.title.toLowerCase().includes(query.q)
+    );
+    expect(isQMatchesWithResult).toBe(true);
+  });
+
+  it("GET /articles?q=feshjfjehbdwadw", async () => {
+    const query = {
+      q: "feshjfjehbdwadw",
+    };
+    const res = await request(app).get("/articles").query(query);
+    expect(res.body.length).toBe(0);
+  });
+
+  it("GET /articles?type=IT", async () => {
+    const query = {
+      type: "IT",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const isAllTypesMatches = res.body.every((article: Article) =>
+      article.type.includes("IT")
+    );
+    expect(isAllTypesMatches).toBe(true);
+  });
+
+  it("GET /articles?type=ECONOMICS", async () => {
+    const query = {
+      type: "ECONOMICS",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const isAllTypesMatches = res.body.every((article: Article) =>
+      article.type.includes("ECONOMICS")
+    );
+    expect(isAllTypesMatches).toBe(true);
+  });
+
+  it("GET /articles?type=SCIENCE", async () => {
+    const query = {
+      type: "SCIENCE",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const isAllTypesMatches = res.body.every((article: Article) =>
+      article.type.includes("SCIENCE")
+    );
+    expect(isAllTypesMatches).toBe(true);
+  });
+
+  it("GET /articles?_sort=created&_order=asc", async () => {
+    const query: {
+      _sort: ArticlesGetQuery["_sort"];
+      _order: ArticlesGetQuery["_order"];
+    } = {
+      _sort: "created",
+      _order: "asc",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const datesArray: number[] = res.body.map((article: Article) => {
+      const articleDate = article.createdAt;
+      const [day, month, year] = articleDate.split(".").map(Number);
+      return new Date(year, month - 1, day).getTime();
+    });
+    const isCorrectSubsequence = checkRightNumberSubsequence(
+      query._order,
+      datesArray
+    );
+    expect(isCorrectSubsequence).toBe(true);
+  });
+
+  it("GET /articles?_sort=created&_order=desc", async () => {
+    const query: {
+      _sort: ArticlesGetQuery["_sort"];
+      _order: ArticlesGetQuery["_order"];
+    } = {
+      _sort: "created",
+      _order: "desc",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const datesArray: number[] = res.body.map((article: Article) => {
+      const articleDate = article.createdAt;
+      const [day, month, year] = articleDate.split(".").map(Number);
+      return new Date(year, month - 1, day).getTime();
+    });
+    const isCorrectSubsequence = checkRightNumberSubsequence(
+      query._order,
+      datesArray
+    );
+    expect(isCorrectSubsequence).toBe(true);
+  });
+
+  it("GET /articles?_sort=views&_order=asc", async () => {
+    const query: {
+      _sort: ArticlesGetQuery["_sort"];
+      _order: ArticlesGetQuery["_order"];
+    } = {
+      _sort: "views",
+      _order: "asc",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const viewsArray: number[] = res.body.map(
+      (article: Article) => article.views
+    );
+    const isCorrectSubsequence = checkRightNumberSubsequence(
+      query._order,
+      viewsArray
+    );
+    expect(isCorrectSubsequence).toBe(true);
+  });
+
+  it("GET /articles?_sort=views&_order=desc", async () => {
+    const query: {
+      _sort: ArticlesGetQuery["_sort"];
+      _order: ArticlesGetQuery["_order"];
+    } = {
+      _sort: "views",
+      _order: "desc",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const viewsArray: number[] = res.body.map(
+      (article: Article) => article.views
+    );
+    const isCorrectSubsequence = checkRightNumberSubsequence(
+      query._order,
+      viewsArray
+    );
+    expect(isCorrectSubsequence).toBe(true);
+  });
+
+  it("GET /articles/670e4a0655e53c8e6099fcf7", async () => {
+    const res = await request(app).get("/articles/670e4a0655e53c8e6099fcf7");
+
+    expect(res.body._id).toBe("670e4a0655e53c8e6099fcf7");
   });
 });

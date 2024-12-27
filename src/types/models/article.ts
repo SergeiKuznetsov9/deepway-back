@@ -47,13 +47,13 @@ export type Article = {
 };
 
 export type ArticlesGetQuery = {
-  _expand: string;
-  _sort: string;
+  _expand?: "user";
+  _sort: "created" | "title" | "views";
   _page: string;
   _limit: string;
-  _order: string;
+  _order: "desc" | "asc";
   q: string;
-  type: string;
+  type: "ALL" | "IT" | "ECONOMICS" | "SCIENCE";
 };
 
 export type ArticleGetParams = {
