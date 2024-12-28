@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { Profile, ProfilePutBody } from "src/types/models/profile";
 
 export class ProfileService {
@@ -12,7 +12,10 @@ export class ProfileService {
     return (await this.collection.findOne({ userId })) as Profile;
   }
 
-  async updateProfileByUserId(userId: string, profilePutBody: ProfilePutBody) {
-    return await this.collection.updateOne({ userId }, profilePutBody);
+  async updateProfileByUserId(_id: string, profilePutBody: ProfilePutBody) {
+    return await this.collection.updateOne(
+      { _id: new ObjectId(_id) },
+      { $set: { ...profilePutBody } }
+    );
   }
 }

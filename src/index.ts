@@ -5,7 +5,7 @@ import { createApp } from "./app";
 import { runDb } from "./db/db";
 
 const port = process.env.PORT || 3000;
-const mongoDbName = process.env.MONGO_DB_NAME || "";
+const mongoDbName = "deepway";
 
 const startApp = async () => {
   const client = await runDb();

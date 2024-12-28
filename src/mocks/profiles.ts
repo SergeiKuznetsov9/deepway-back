@@ -5,7 +5,7 @@ const profiles = [
     _id: new ObjectId("670e4b2c55e53c8e609fe55a"),
     first: "Сергей",
     lastname: "Кузнецофф",
-    age: 37,
+    age: 36,
     currency: "RUB",
     country: "Belarus",
     city: "Moscow",

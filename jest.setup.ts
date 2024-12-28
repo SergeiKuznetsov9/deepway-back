@@ -3,7 +3,7 @@ import { createApp } from "./src/app";
 import { runDb } from "./src/db/db";
 dotenv.config({ path: ".env.test" });
 
-const mongoDbName = process.env.MONGO_DB_NAME || "";
+const mongoDbName = "deepway_test";
 
 export const initTestDB = async () => {
   const client = await runDb();

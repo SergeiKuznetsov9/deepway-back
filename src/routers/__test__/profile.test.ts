@@ -1,5 +1,5 @@
 import request from "supertest";
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
@@ -34,13 +34,11 @@ describe("Profile API", () => {
       lastname: "Новое значение",
       username: "Новое значение",
     };
-    const res: Response = await request(app)
-      .put("/profile/670e4a9955e53c8e609cf176")
-      .send(reqBody);
+    await request(app).put("/profile/670e4b2c55e53c8e609fe55b").send(reqBody);
 
     const updatedProfile = (await db
       .collection("profile")
-      .findOne({ userId: "670e4a9955e53c8e609cf176" })) as Profile;
+      .findOne({ _id: new ObjectId("670e4b2c55e53c8e609fe55b") })) as Profile;
 
     const isAllUpdated = Object.entries(updatedProfile).every(
       (fieldWithData) => {
