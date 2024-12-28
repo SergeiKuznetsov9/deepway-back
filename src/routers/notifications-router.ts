@@ -1,5 +1,4 @@
 import { Router, Response } from "express";
-import { MongoClient } from "mongodb";
 
 import { ErrorMessage } from "../types/models/messages";
 import { RequestWithParams } from "../types/types";
@@ -7,10 +6,10 @@ import {
   Notification,
   NotificationGetParams,
 } from "../types/models/notification";
+import { NotificationsService } from "../services/notifications-service";
 
 export const getNotificationsRouter = (
-  client: MongoClient,
-  mongoDbName: string
+  notificationsService: NotificationsService
 ) => {
   const router = Router();
 
@@ -20,14 +19,11 @@ export const getNotificationsRouter = (
       req: RequestWithParams<NotificationGetParams>,
       res: Response<Notification[] | ErrorMessage>
     ) => {
-      const { userId } = req.params;
-
       try {
-        const notifications = (await client
-          .db(mongoDbName)
-          .collection("notifications")
-          .find({ userId })
-          .toArray()) as Notification[];
+        const notifications =
+          await notificationsService.getNotificationsByUserId(
+            req.params.userId
+          );
 
         res.json(notifications);
       } catch (error) {

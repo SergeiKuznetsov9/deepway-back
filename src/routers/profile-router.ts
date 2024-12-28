@@ -1,5 +1,4 @@
 import { Router, Response } from "express";
-import { MongoClient } from "mongodb";
 
 import { ErrorMessage, SuccessMessage } from "../types/models/messages";
 import { RequestWithParams, RequestWithParamsAndBody } from "../types/types";
@@ -9,8 +8,9 @@ import {
   ProfilePutBody,
   ProfilePutParams,
 } from "../types/models/profile";
+import { ProfileService } from "../services/profile-service";
 
-export const getProfileRouter = (client: MongoClient, mongoDbName: string) => {
+export const getProfileRouter = (profileService: ProfileService) => {
   const router = Router();
 
   router.get(
@@ -19,13 +19,10 @@ export const getProfileRouter = (client: MongoClient, mongoDbName: string) => {
       req: RequestWithParams<ProfileGetParams>,
       res: Response<Profile | ErrorMessage>
     ) => {
-      const userId = req.params.userId;
-
       try {
-        const profile = (await client
-          .db(mongoDbName)
-          .collection("profile")
-          .findOne({ userId })) as Profile;
+        const profile = await profileService.getProfileByUserId(
+          req.params.userId
+        );
         res.json(profile);
       } catch (error) {
         console.error("Ошибка чтения данных", error);
@@ -40,39 +37,12 @@ export const getProfileRouter = (client: MongoClient, mongoDbName: string) => {
       req: RequestWithParamsAndBody<ProfilePutParams, ProfilePutBody>,
       res: Response<ErrorMessage | SuccessMessage>
     ): Promise<void> => {
-      const {
-        age,
-        avatar,
-        city,
-        country,
-        currency,
-        first,
-        lastname,
-        username,
-      } = req.body;
-
       try {
-        const userId = req.params.userId;
-
-        const result = await client
-          .db(mongoDbName)
-          .collection("profile")
-          .updateOne(
-            { userId },
-            {
-              $set: {
-                first,
-                lastname,
-                age,
-                currency,
-                country,
-                city,
-                username,
-                avatar,
-              },
-            }
-          );
-        if (result.matchedCount === 0) {
+        const updateResult = await profileService.updateProfileByUserId(
+          req.params.userId,
+          req.body
+        );
+        if (updateResult.matchedCount === 0) {
           res.status(404).json({ error: "Профиль не найден" });
           return;
         }

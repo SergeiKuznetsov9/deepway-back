@@ -10,3 +10,8 @@ export type User = {
   avatar: string;
   features: Features;
 };
+
+export type UserCredentials = {
+  username: string;
+  password: string;
+};

@@ -1,23 +1,15 @@
 import { Router, Request, Response } from "express";
-import { MongoClient } from "mongodb";
 
 import { ErrorMessage } from "../types/models/messages";
 import { User } from "../types/models/user";
+import { LoginService } from "../services/login-service";
 
-export const getLoginRouter = (client: MongoClient, mongoDbName: string) => {
+export const getLoginRouter = (loginService: LoginService) => {
   const router = Router();
 
   router.post("/", async (req: Request, res: Response<User | ErrorMessage>) => {
-    const { username, password } = req.body;
-
     try {
-      const user = (await client
-        .db(mongoDbName)
-        .collection("users")
-        .findOne(
-          { username, password },
-          { projection: { password: 0 } }
-        )) as User | null;
+      const user = await loginService.getUser(req.body);
 
       if (user) {
         res.status(200).json(user);

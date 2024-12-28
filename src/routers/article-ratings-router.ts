@@ -1,5 +1,4 @@
 import { Response, Router } from "express";
-import { MongoClient } from "mongodb";
 
 import { ErrorMessage, MessageWithEntityId } from "../types/models/messages";
 import { RequestWithBody, RequestWithQuery } from "../types/types";
@@ -8,13 +7,11 @@ import {
   ArticleRatingGetQuery,
   ArticleRatingPostBody,
 } from "../types/models/article-rating";
-
-export const MONGO_DB_NAME = process.env.MONGO_DB_NAME;
+import { ArticleRatingsService } from "../services/article-ratings-service";
 
 export const getArticleRatingsRouter = (
-  client: MongoClient,
-  mongoDbName: string
-) => {
+  articleRatingsService: ArticleRatingsService
+): Router => {
   const router = Router();
 
   router.get(
@@ -23,14 +20,10 @@ export const getArticleRatingsRouter = (
       req: RequestWithQuery<ArticleRatingGetQuery>,
       res: Response<ArticleRating | ErrorMessage>
     ) => {
-      const { userId, articleId } = req.query;
-
       try {
-        const articleRating = (await client
-          .db(mongoDbName)
-          .collection("article-ratings")
-          .findOne({ userId, articleId })) as ArticleRating;
-
+        const articleRating = await articleRatingsService.getArticleRating(
+          req.query
+        );
         res.status(200).json(articleRating);
       } catch (error) {
         console.error("Ошибка получения данных", error);
@@ -45,16 +38,11 @@ export const getArticleRatingsRouter = (
       req: RequestWithBody<ArticleRatingPostBody>,
       res: Response<MessageWithEntityId | ErrorMessage>
     ) => {
-      const { articleId, userId, rate, feedback } = req.body;
-      const rating = { articleId, userId, rate, feedback };
-
       try {
-        const result = await client
-          .db(mongoDbName)
-          .collection("article-ratings")
-          .insertOne(rating);
-
-        res.status(201).json({ _id: result.insertedId.toString() });
+        const postResult = await articleRatingsService.postArticleRating(
+          req.body
+        );
+        res.status(201).json({ _id: postResult.insertedId.toString() });
       } catch (error) {
         console.error("Ошибка сохранения данных", error);
         res.status(500).json({ error: "Ошибка сохранения данных" });
