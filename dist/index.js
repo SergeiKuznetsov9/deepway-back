@@ -14,13 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const app_1 = require("./app");
 const db_1 = require("./db/db");
+const app_1 = require("./app");
 const port = process.env.PORT || 3000;
-const mongoDbName = "deepway";
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     const client = yield (0, db_1.runDb)();
-    const app = (0, app_1.createApp)(client, mongoDbName);
+    const app = (0, app_1.createApp)(client, "deepway");
     app.listen(port, () => {
         console.log(`Deepway app is listening on port ${port}`);
     });

@@ -28,8 +28,8 @@ const runDb = () => __awaiter(void 0, void 0, void 0, function* () {
             },
             tlsAllowInvalidCertificates: true,
         });
-        yield client.connect();
         try {
+            yield client.connect();
             yield client.db("articles").command({ ping: 1 });
             console.log("Connected successfuly to mongo server");
         }

@@ -20,9 +20,9 @@ export const runDb = async () => {
       tlsAllowInvalidCertificates: true,
       
     });
-    await client.connect();
 
     try {
+      await client.connect();
       await client.db("articles").command({ ping: 1 });
       console.log("Connected successfuly to mongo server");
     } catch (error) {
