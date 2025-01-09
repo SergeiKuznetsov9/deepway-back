@@ -14,11 +14,9 @@ const mongodb_1 = require("mongodb");
 const mongodb_memory_server_1 = require("mongodb-memory-server");
 const mongoUri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CLUSTER}/?retryWrites=true&w=majority&appName=Cluster-deepway`;
 // const mongoUri = `mongodb://0.0.0.0:27017`;
-// const isProd = process.env.NODE_ENV === "production";
 const runDb = () => __awaiter(void 0, void 0, void 0, function* () {
     let client;
     if (process.env.NODE_ENV === "production") {
-        console.log(process.env);
         // Использование реальной базы данных
         client = new mongodb_1.MongoClient(mongoUri, {
             serverApi: {
@@ -44,6 +42,7 @@ const runDb = () => __awaiter(void 0, void 0, void 0, function* () {
         const uri = mongod.getUri();
         client = new mongodb_1.MongoClient(uri);
         yield client.connect();
+        console.log("Connected successfuly to MOCK mongo server");
     }
     return client;
 });
