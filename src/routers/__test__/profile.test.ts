@@ -1,11 +1,11 @@
 import request from "supertest";
-import { Db, ObjectId } from "mongodb";
+import { Db, ObjectId, WithId } from "mongodb";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
 import { getProfilesMocks } from "../../mocks/profiles";
-import { Profile } from "../../types/models/profile";
-import { ErrorMessage } from "../../types/models/messages";
+import { Profile } from "../../types/models/profile-types";
+import { ErrorMessage } from "../../types/models/messages-types";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
@@ -45,9 +45,9 @@ describe("Profile API", () => {
     };
     await request(app).put("/profile/670e4b2c55e53c8e609fe55b").send(reqBody);
 
-    const updatedProfile = (await db
-      .collection("profile")
-      .findOne({ _id: new ObjectId("670e4b2c55e53c8e609fe55b") })) as Profile;
+    const updatedProfile = (await db.collection("profile").findOne({
+      _id: new ObjectId("670e4b2c55e53c8e609fe55b"),
+    })) as WithId<Profile>;
 
     expect(updatedProfile.first).toBe("Новое значение");
     expect(updatedProfile.lastname).toBe("Новое значение");

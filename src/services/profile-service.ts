@@ -5,11 +5,11 @@ export class ProfileService {
   private collection;
 
   constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection("profile");
+    this.collection = client.db(dbName).collection<Profile>("profile");
   }
 
   async getProfileByUserId(userId: string) {
-    return (await this.collection.findOne({ userId })) as Profile;
+    return await this.collection.findOne({ userId });
   }
 
   async updateProfileByUserId(_id: string, profilePutBody: ProfilePutBody) {

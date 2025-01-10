@@ -34,7 +34,6 @@ type ArticleTextBlock = ArticleBlockBase & {
 type ArticleBlock = ArticleCodeBlock | ArticleImageBlock | ArticleTextBlock;
 
 export type Article = {
-  _id: ObjectId;
   title: string;
   subtitle: string;
   img: string;

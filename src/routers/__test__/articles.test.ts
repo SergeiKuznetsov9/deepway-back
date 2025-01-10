@@ -1,11 +1,11 @@
 import request from "supertest";
-import { Db } from "mongodb";
+import { Db, WithId } from "mongodb";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { getUsersMocks } from "../../mocks/users";
 import { getArticlesMocks } from "../../mocks/articles";
-import { Article, ArticlesGetQuery } from "../../types/models/article";
-import { ErrorMessage } from "../../types/models/messages";
+import { Article, ArticlesGetQuery } from "../../types/models/article-types";
+import { ErrorMessage } from "../../types/models/messages-types";
 
 const checkRightNumberSubsequence = (
   order: "asc" | "desc",
@@ -57,7 +57,7 @@ describe("Articles API", () => {
       "670e4a0655e53c8e6099fcf7",
     ];
     const res = await request(app).get("/articles").query(query);
-    const resIdsArray = res.body.map((article: Article) => article._id);
+    const resIdsArray = res.body.map((article: WithId<Article>) => article._id);
     expect(resIdsArray).toEqual(correctResultsIds);
   });
 
@@ -216,7 +216,6 @@ describe("Articles API", () => {
     };
     const res = await request(app).get("/articles").query(query);
     const body = res.body as ErrorMessage;
-    console.log(body);
     expect(body).toEqual({
       error:
         'The value of "_expand" must be user; The value of "_sort" must be created or title or views; The value of "_sort" must be desc or asc; The value of "_page" must be a number; The value of "_limit" must be a number; The value of "type" must be ALL or IT or ECONOMICS or SCIENCE; The value of "q" is less than 3 chars',
@@ -232,7 +231,6 @@ describe("Articles API", () => {
   it("GET /articles/670e4a0655e53c8e6099fcf7f", async () => {
     const res = await request(app).get("/articles/670e4a0655e53c8e6099fcf7f");
     const body = res.body as ErrorMessage;
-    console.log(body);
     expect(body).toEqual({ error: "Invalid article id" });
   });
 });

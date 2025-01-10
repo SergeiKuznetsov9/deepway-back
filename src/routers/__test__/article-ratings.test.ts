@@ -4,8 +4,8 @@ import { Response } from "supertest";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { getArticleRatingsMocks } from "../../mocks/article-ratings";
-import { ArticleRating } from "../../types/models/article-rating";
-import { ErrorMessage } from "../../types/models/messages";
+import { ArticleRating } from "../../types/models/article-rating-types";
+import { ErrorMessage } from "../../types/models/messages-types";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;

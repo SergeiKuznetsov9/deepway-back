@@ -1,11 +1,11 @@
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient, ObjectId, WithId } from "mongodb";
 import { Article, ArticlesGetQuery } from "../types/models/article-types";
 
 export class ArticlesService {
   private collection;
 
   constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection("articles");
+    this.collection = client.db(dbName).collection<Article>("articles");
   }
 
   async getArticles(requestQuery: ArticlesGetQuery) {
@@ -115,7 +115,7 @@ export class ArticlesService {
       );
     }
 
-    return (await this.collection.aggregate(pipeline).toArray()) as Article[];
+    return await this.collection.aggregate<WithId<Article>>(pipeline).toArray();
   }
 
   async getArticleById(id: string) {

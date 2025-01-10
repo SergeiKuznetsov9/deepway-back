@@ -1,7 +1,10 @@
 import { Response, Router } from "express";
 import { WithId } from "mongodb";
 
-import { ErrorMessage, MessageWithEntityId } from "../types/models/messages-types";
+import {
+  ErrorMessage,
+  MessageWithEntityId,
+} from "../types/models/messages-types";
 import { RequestWithBody, RequestWithQuery } from "../types/primary-types";
 import {
   ArticleRating,
@@ -51,7 +54,7 @@ export const getArticleRatingsRouter = (
         const postResult = await articleRatingsService.postArticleRating(
           req.body
         );
-        res.status(201).json({ _id: postResult.insertedId.toString() });
+        res.status(201).json(postResult);
       } catch (error) {
         console.error("Ошибка сохранения данных", error);
         res.status(500).json({ error: "Ошибка сохранения данных" });

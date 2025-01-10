@@ -1,7 +1,10 @@
 import { Router, Response } from "express";
 
 import { ErrorMessage, SuccessMessage } from "../types/models/messages-types";
-import { RequestWithParams, RequestWithParamsAndBody } from "../types/primary-types";
+import {
+  RequestWithParams,
+  RequestWithParamsAndBody,
+} from "../types/primary-types";
 import {
   Profile,
   ProfileGetParams,
@@ -15,6 +18,7 @@ import {
   getProfilePutParamsValidator,
 } from "../middlewares/inputValidators/profile-validators";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
+import { WithId } from "mongodb";
 
 export const getProfileRouter = (profileService: ProfileService) => {
   const router = Router();
@@ -25,7 +29,7 @@ export const getProfileRouter = (profileService: ProfileService) => {
     inputValidationMiddleware,
     async (
       req: RequestWithParams<ProfileGetParams>,
-      res: Response<Profile | ErrorMessage>
+      res: Response<WithId<Profile> | ErrorMessage | null>
     ) => {
       try {
         const profile = await profileService.getProfileByUserId(

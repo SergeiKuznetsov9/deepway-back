@@ -5,10 +5,12 @@ export class NotificationsService {
   private collection;
 
   constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection("notifications");
+    this.collection = client
+      .db(dbName)
+      .collection<Notification>("notifications");
   }
 
   async getNotificationsByUserId(userId: string) {
-    return (await this.collection.find({ userId }).toArray()) as Notification[];
+    return await this.collection.find({ userId }).toArray();
   }
 }

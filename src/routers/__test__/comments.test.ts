@@ -1,12 +1,12 @@
 import request from "supertest";
-import { Db, ObjectId } from "mongodb";
+import { Db, ObjectId, WithId } from "mongodb";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
 import { getCommentsMocks } from "../../mocks/comments";
 import { getUsersMocks } from "../../mocks/users";
-import { Comment } from "../../types/models/comment";
-import { ErrorMessage } from "../../types/models/messages";
+import { Comment } from "../../types/models/comment-types";
+import { ErrorMessage } from "../../types/models/messages-types";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
@@ -75,7 +75,7 @@ describe("Comments API", () => {
 
     const insertedComment = (await db
       .collection("comments")
-      .findOne({ _id: new ObjectId(insertedId) })) as Comment;
+      .findOne({ _id: new ObjectId(insertedId) })) as WithId<Comment>;
 
     expect(insertedComment.text).toBe("Тестовый коммент");
   });
@@ -89,7 +89,6 @@ describe("Comments API", () => {
     const res: Response = await request(app).post("/comments").send(reqBody);
 
     const body = res.body as ErrorMessage;
-    console.log(body);
 
     expect(body).toEqual({
       error: "Invalid article id; Invalid user id; Invalid comment text",

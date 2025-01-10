@@ -1,8 +1,6 @@
-import { ObjectId } from "mongodb";
 import { User } from "./user-types";
 
 export type Comment = {
-  _id: ObjectId;
   text: string;
   articleId: string;
   userId: string;
@@ -14,8 +12,4 @@ export type CommentGetQuery = {
   articleId: string;
 };
 
-export type CommentPostBody = {
-  text: string;
-  articleId: string;
-  userId: string;
-};
+export type CommentPostBody = Omit<Comment, "user">;

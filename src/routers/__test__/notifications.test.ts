@@ -3,9 +3,9 @@ import { Db } from "mongodb";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
-import { Notification } from "../../types/models/notification";
+import { Notification } from "../../types/models/notification-types";
 import { getNotificationsMocks } from "../../mocks/notifications";
-import { ErrorMessage } from "../../types/models/messages";
+import { ErrorMessage } from "../../types/models/messages-types";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;

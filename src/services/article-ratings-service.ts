@@ -18,6 +18,7 @@ export class ArticleRatingsService {
   }
 
   async postArticleRating(articleRatingPostBody: ArticleRating) {
-    return await this.collection.insertOne(articleRatingPostBody);
+    const postResult = await this.collection.insertOne(articleRatingPostBody);
+    return { _id: postResult.insertedId.toString() };
   }
 }

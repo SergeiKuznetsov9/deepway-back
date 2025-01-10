@@ -4,7 +4,7 @@ import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
 import { getUsersMocks } from "../../mocks/users";
-import { User } from "../../types/models/user";
+import { User } from "../../types/models/user-types";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
