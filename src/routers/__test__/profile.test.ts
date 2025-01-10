@@ -5,6 +5,7 @@ import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
 import { getProfilesMocks } from "../../mocks/profiles";
 import { Profile } from "../../types/models/profile";
+import { ErrorMessage } from "../../types/models/messages";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
@@ -23,13 +24,21 @@ describe("Profile API", () => {
     expect(body.userId).toBe("670e4a9955e53c8e609cf176");
   });
 
+  it("GET /profile with invalid user ID", async () => {
+    const res: Response = await request(app).get(
+      "/profile/670e4a9955e53c8e609cf176h"
+    );
+    const body = res.body as ErrorMessage;
+    expect(body).toEqual({ error: "Invalid user id" });
+  });
+
   it("PUT /profile", async () => {
     const reqBody = {
-      age: "Новое значение",
-      avatar: "Новое значение",
+      age: "14",
+      avatar: "https://newVal",
       city: "Новое значение",
       country: "Новое значение",
-      currency: "Новое значение",
+      currency: "НЗН",
       first: "Новое значение",
       lastname: "Новое значение",
       username: "Новое значение",
@@ -40,14 +49,35 @@ describe("Profile API", () => {
       .collection("profile")
       .findOne({ _id: new ObjectId("670e4b2c55e53c8e609fe55b") })) as Profile;
 
-    const isAllUpdated = Object.entries(updatedProfile).every(
-      (fieldWithData) => {
-        if (fieldWithData[0] !== "userId" && fieldWithData[0] !== "_id") {
-          return fieldWithData[1] === "Новое значение";
-        }
-        return true;
-      }
-    );
-    expect(isAllUpdated).toBe(true);
+    expect(updatedProfile.first).toBe("Новое значение");
+    expect(updatedProfile.lastname).toBe("Новое значение");
+    expect(updatedProfile.country).toBe("Новое значение");
+    expect(updatedProfile.city).toBe("Новое значение");
+    expect(updatedProfile.username).toBe("Новое значение");
+    expect(updatedProfile.avatar).toBe("https://newVal");
+    expect(updatedProfile.age).toBe("14");
+    expect(updatedProfile.currency).toBe("НЗН");
+    expect(updatedProfile.userId).toBe("670e4a9955e53c8e609cf176");
+  });
+
+  it("PUT /profile with invalid data", async () => {
+    const reqBody = {
+      age: "5",
+      avatar: "htt://newVal",
+      city: "Значение включающее более 32 символов",
+      country: "Значение включающее более 32 символов",
+      currency: "4Сим",
+      first: "Значение включающее более 32 символов",
+      lastname: "Значение включающее более 32 символов",
+      username: "Значение включающее более 32 символов",
+    };
+    const res = await request(app)
+      .put("/profile/670e4b2c55e53c8e609fe55bk")
+      .send(reqBody);
+    const body = res.body as ErrorMessage;
+    expect(body).toEqual({
+      error:
+        "Invalid user id; Invalid age; Invalid avatar; Invalid city; Invalid country; Invalid currency; Invalid first; Invalid lastname; Invalid username",
+    });
   });
 });

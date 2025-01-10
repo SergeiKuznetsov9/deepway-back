@@ -9,12 +9,20 @@ import {
   ProfilePutParams,
 } from "../types/models/profile";
 import { ProfileService } from "../services/profile-service";
+import {
+  getProfileGetParamsValidator,
+  getProfilePutBodyValidator,
+  getProfilePutParamsValidator,
+} from "../middlewares/inputValidators/profile-validators";
+import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 
 export const getProfileRouter = (profileService: ProfileService) => {
   const router = Router();
 
   router.get(
     "/:userId",
+    getProfileGetParamsValidator(),
+    inputValidationMiddleware,
     async (
       req: RequestWithParams<ProfileGetParams>,
       res: Response<Profile | ErrorMessage>
@@ -33,6 +41,9 @@ export const getProfileRouter = (profileService: ProfileService) => {
 
   router.put(
     "/:userId",
+    getProfilePutParamsValidator(),
+    getProfilePutBodyValidator(),
+    inputValidationMiddleware,
     async (
       req: RequestWithParamsAndBody<ProfilePutParams, ProfilePutBody>,
       res: Response<ErrorMessage | SuccessMessage>

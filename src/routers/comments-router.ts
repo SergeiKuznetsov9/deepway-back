@@ -4,12 +4,19 @@ import { ErrorMessage, MessageWithEntityId } from "../types/models/messages";
 import { RequestWithBody, RequestWithQuery } from "../types/types";
 import { CommentGetQuery, CommentPostBody } from "../types/models/comment";
 import { CommentsService } from "../services/comments-service";
+import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
+import {
+  getCommentGetQueryValidator,
+  getCommentPostBodyValidator,
+} from "../middlewares/inputValidators/comments-validators";
 
 export const getCommentsRouter = (commentsService: CommentsService) => {
   const router = Router();
 
   router.get(
     "/",
+    getCommentGetQueryValidator(),
+    inputValidationMiddleware,
     async (
       req: RequestWithQuery<CommentGetQuery>,
       res: Response<Comment[] | ErrorMessage>
@@ -26,6 +33,8 @@ export const getCommentsRouter = (commentsService: CommentsService) => {
 
   router.post(
     "/",
+    getCommentPostBodyValidator(),
+    inputValidationMiddleware,
     async (
       req: RequestWithBody<CommentPostBody>,
       res: Response<MessageWithEntityId | ErrorMessage>

@@ -11,9 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getArticleRouter = void 0;
 const express_1 = require("express");
+const articles_validators_1 = require("../middlewares/inputValidators/articles-validators");
+const common_validators_1 = require("../middlewares/inputValidators/common-validators");
 const getArticleRouter = (articlesService) => {
     const router = (0, express_1.Router)();
-    router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.get("/", (0, articles_validators_1.getArticlesGetQueryValidator)(), common_validators_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const articles = yield articlesService.getArticles(req.query);
             res.json(articles);
@@ -23,7 +25,7 @@ const getArticleRouter = (articlesService) => {
             res.status(500).json({ error: "Ошибка получения данных" });
         }
     }));
-    router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.get("/:id", (0, articles_validators_1.getArticleGetParamsValidator)(), common_validators_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const article = yield articlesService.getArticleById(req.params.id);
             res.json(article);

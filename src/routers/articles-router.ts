@@ -7,12 +7,19 @@ import {
 import { ErrorMessage } from "../types/models/messages";
 import { RequestWithParams, RequestWithQuery } from "../types/types";
 import { ArticlesService } from "../services/articles-service";
+import {
+  getArticlesGetQueryValidator,
+  getArticleGetParamsValidator,
+} from "../middlewares/inputValidators/articles-validators";
+import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 
 export const getArticleRouter = (articlesService: ArticlesService) => {
   const router = Router();
 
   router.get(
     "/",
+    getArticlesGetQueryValidator(),
+    inputValidationMiddleware,
     async (
       req: RequestWithQuery<ArticlesGetQuery>,
       res: Response<Article[] | ErrorMessage>
@@ -29,6 +36,8 @@ export const getArticleRouter = (articlesService: ArticlesService) => {
 
   router.get(
     "/:id",
+    getArticleGetParamsValidator(),
+    inputValidationMiddleware,
     async (
       req: RequestWithParams<ArticleGetParams>,
       res: Response<Article | ErrorMessage>
