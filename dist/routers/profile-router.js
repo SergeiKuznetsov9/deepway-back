@@ -11,9 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProfileRouter = void 0;
 const express_1 = require("express");
+const profile_validators_1 = require("../middlewares/inputValidators/profile-validators");
+const common_validators_1 = require("../middlewares/inputValidators/common-validators");
 const getProfileRouter = (profileService) => {
     const router = (0, express_1.Router)();
-    router.get("/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.get("/:userId", (0, profile_validators_1.getProfileGetParamsValidator)(), common_validators_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const profile = yield profileService.getProfileByUserId(req.params.userId);
             res.json(profile);
@@ -23,7 +25,7 @@ const getProfileRouter = (profileService) => {
             res.status(500).json({ error: "Ошибка получения данных" });
         }
     }));
-    router.put("/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.put("/:userId", (0, profile_validators_1.getProfilePutParamsValidator)(), (0, profile_validators_1.getProfilePutBodyValidator)(), common_validators_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const updateResult = yield profileService.updateProfileByUserId(req.params.userId, req.body);
             if (updateResult.matchedCount === 0) {

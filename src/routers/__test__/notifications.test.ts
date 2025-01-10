@@ -5,6 +5,7 @@ import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
 import { Notification } from "../../types/models/notification";
 import { getNotificationsMocks } from "../../mocks/notifications";
+import { ErrorMessage } from "../../types/models/messages";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
@@ -24,5 +25,13 @@ describe("Notifications API", () => {
       (notification: Notification) => notification.userId === userId
     );
     expect(isCorrectNotifications).toBe(true);
+  });
+
+  it("GET /notifications with invalid user ID", async () => {
+    const userId = "670e4a9955e53c8e609cf174g";
+    const res: Response = await request(app).get(`/notifications/${userId}`);
+    const body = res.body as ErrorMessage;
+
+    expect(body).toEqual({ error: "Invalid user id" });
   });
 });

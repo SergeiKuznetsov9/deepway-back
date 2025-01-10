@@ -8,6 +8,11 @@ import {
   ArticleRatingPostBody,
 } from "../types/models/article-rating";
 import { ArticleRatingsService } from "../services/article-ratings-service";
+import {
+  getArticleRatingGetQueryValidator,
+  getArticleRatingPostBodyValidator,
+} from "../middlewares/inputValidators/articles-rating-validators";
+import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 
 export const getArticleRatingsRouter = (
   articleRatingsService: ArticleRatingsService
@@ -16,6 +21,8 @@ export const getArticleRatingsRouter = (
 
   router.get(
     "/",
+    getArticleRatingGetQueryValidator(),
+    inputValidationMiddleware,
     async (
       req: RequestWithQuery<ArticleRatingGetQuery>,
       res: Response<ArticleRating | ErrorMessage>
@@ -34,6 +41,8 @@ export const getArticleRatingsRouter = (
 
   router.post(
     "/",
+    getArticleRatingPostBodyValidator(),
+    inputValidationMiddleware,
     async (
       req: RequestWithBody<ArticleRatingPostBody>,
       res: Response<MessageWithEntityId | ErrorMessage>

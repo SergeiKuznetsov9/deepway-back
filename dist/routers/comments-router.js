@@ -11,9 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCommentsRouter = void 0;
 const express_1 = require("express");
+const common_validators_1 = require("../middlewares/inputValidators/common-validators");
+const comments_validators_1 = require("../middlewares/inputValidators/comments-validators");
 const getCommentsRouter = (commentsService) => {
     const router = (0, express_1.Router)();
-    router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.get("/", (0, comments_validators_1.getCommentGetQueryValidator)(), common_validators_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const comments = yield commentsService.getComments(req.query);
             res.json(comments);
@@ -23,7 +25,7 @@ const getCommentsRouter = (commentsService) => {
             res.status(500).json({ error: "Ошибка получения данных" });
         }
     }));
-    router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    router.post("/", (0, comments_validators_1.getCommentPostBodyValidator)(), common_validators_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const postResult = yield commentsService.postComment(req.body);
             res.status(201).json(postResult);

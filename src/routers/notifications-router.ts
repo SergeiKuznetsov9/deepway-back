@@ -7,6 +7,8 @@ import {
   NotificationGetParams,
 } from "../types/models/notification";
 import { NotificationsService } from "../services/notifications-service";
+import { getNotificationGetParamsValidator } from "../middlewares/inputValidators/notifications-validators";
+import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 
 export const getNotificationsRouter = (
   notificationsService: NotificationsService
@@ -15,6 +17,8 @@ export const getNotificationsRouter = (
 
   router.get(
     "/:userId",
+    getNotificationGetParamsValidator(),
+    inputValidationMiddleware,
     async (
       req: RequestWithParams<NotificationGetParams>,
       res: Response<Notification[] | ErrorMessage>

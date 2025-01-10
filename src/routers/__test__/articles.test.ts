@@ -5,6 +5,7 @@ import { initTestDB } from "../../../jest.setup";
 import { getUsersMocks } from "../../mocks/users";
 import { getArticlesMocks } from "../../mocks/articles";
 import { Article, ArticlesGetQuery } from "../../types/models/article";
+import { ErrorMessage } from "../../types/models/messages";
 
 const checkRightNumberSubsequence = (
   order: "asc" | "desc",
@@ -69,17 +70,6 @@ describe("Articles API", () => {
       (article: Article) => "user" in article
     );
     expect(isUserInArticle).toBe(true);
-  });
-
-  it("GET /articles?_expand=user1", async () => {
-    const query = {
-      _expand: "user1",
-    };
-    const res = await request(app).get("/articles").query(query);
-    const isUserInArticle = res.body.some(
-      (article: Article) => "user" in article
-    );
-    expect(isUserInArticle).toBe(false);
   });
 
   it("GET /articles?q=reac", async () => {
@@ -214,9 +204,35 @@ describe("Articles API", () => {
     expect(isCorrectSubsequence).toBe(true);
   });
 
+  it("GET /articles with invalid data", async () => {
+    const query = {
+      _expand: "user1",
+      _sort: "createdd",
+      _page: "f",
+      _limit: "f",
+      _order: "descc",
+      q: "s",
+      type: "ALLL",
+    };
+    const res = await request(app).get("/articles").query(query);
+    const body = res.body as ErrorMessage;
+    console.log(body);
+    expect(body).toEqual({
+      error:
+        'The value of "_expand" must be user; The value of "_sort" must be created or title or views; The value of "_sort" must be desc or asc; The value of "_page" must be a number; The value of "_limit" must be a number; The value of "type" must be ALL or IT or ECONOMICS or SCIENCE; The value of "q" is less than 3 chars',
+    });
+  });
+
   it("GET /articles/670e4a0655e53c8e6099fcf7", async () => {
     const res = await request(app).get("/articles/670e4a0655e53c8e6099fcf7");
 
     expect(res.body._id).toBe("670e4a0655e53c8e6099fcf7");
+  });
+
+  it("GET /articles/670e4a0655e53c8e6099fcf7f", async () => {
+    const res = await request(app).get("/articles/670e4a0655e53c8e6099fcf7f");
+    const body = res.body as ErrorMessage;
+    console.log(body);
+    expect(body).toEqual({ error: "Invalid article id" });
   });
 });

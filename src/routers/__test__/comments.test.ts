@@ -6,6 +6,7 @@ import { Response } from "supertest";
 import { getCommentsMocks } from "../../mocks/comments";
 import { getUsersMocks } from "../../mocks/users";
 import { Comment } from "../../types/models/comment";
+import { ErrorMessage } from "../../types/models/messages";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
@@ -50,10 +51,22 @@ describe("Comments API", () => {
     expect(isUserData).toBe(true);
   });
 
+  it("GET /comments with invalid data", async () => {
+    const query = {
+      articleId: "670e4a0655e53c8e6099fcf2q",
+      _expand: "users",
+    };
+    const res: Response = await request(app).get("/comments").query(query);
+    const body = res.body as ErrorMessage;
+    expect(body).toEqual({
+      error: 'The value of "_expand" must be user; Invalid article id',
+    });
+  });
+
   it("POST /comments", async () => {
     const reqBody = {
-      articleId: "articleId",
-      userId: "userId",
+      articleId: "670e4a0655e53c8e6099fcf2",
+      userId: "670e4a9955e53c8e609cf174",
       text: "Тестовый коммент",
     };
     const res: Response = await request(app).post("/comments").send(reqBody);
@@ -65,5 +78,21 @@ describe("Comments API", () => {
       .findOne({ _id: new ObjectId(insertedId) })) as Comment;
 
     expect(insertedComment.text).toBe("Тестовый коммент");
+  });
+
+  it("POST /comments with invalid data", async () => {
+    const reqBody = {
+      articleId: "670e4a0655e53c8e6099fcf2h",
+      userId: "670e4a9955e53c8e609cf174j",
+      text: "",
+    };
+    const res: Response = await request(app).post("/comments").send(reqBody);
+
+    const body = res.body as ErrorMessage;
+    console.log(body);
+
+    expect(body).toEqual({
+      error: "Invalid article id; Invalid user id; Invalid comment text",
+    });
   });
 });
