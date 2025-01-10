@@ -1,8 +1,8 @@
 import { Response, Router } from "express";
 
-import { ErrorMessage, MessageWithEntityId } from "../types/models/messages";
-import { RequestWithBody, RequestWithQuery } from "../types/types";
-import { CommentGetQuery, CommentPostBody } from "../types/models/comment";
+import { ErrorMessage, MessageWithEntityId } from "../types/models/messages-types";
+import { RequestWithBody, RequestWithQuery } from "../types/primary-types";
+import { CommentGetQuery, CommentPostBody } from "../types/models/comment-types";
 import { CommentsService } from "../services/comments-service";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 import {

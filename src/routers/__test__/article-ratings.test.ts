@@ -1,9 +1,9 @@
 import request from "supertest";
-import { Db, ObjectId } from "mongodb";
+import { Db, ObjectId, WithId } from "mongodb";
+import { Response } from "supertest";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { getArticleRatingsMocks } from "../../mocks/article-ratings";
-import { Response } from "supertest";
 import { ArticleRating } from "../../types/models/article-rating";
 import { ErrorMessage } from "../../types/models/messages";
 
@@ -24,7 +24,7 @@ describe("Article-ratings API", () => {
     const res: Response = await request(app)
       .get("/article-ratings")
       .query(query);
-    const body = res.body as ArticleRating;
+    const body = res.body as WithId<ArticleRating>;
     expect(body._id).toBe("673f3f568b0d3c3fe74a47ed");
   });
 
@@ -68,7 +68,7 @@ describe("Article-ratings API", () => {
 
     const insertedArticleRating = (await db
       .collection("article-ratings")
-      .findOne({ _id: new ObjectId(insertedId) })) as ArticleRating;
+      .findOne({ _id: new ObjectId(insertedId) })) as WithId<ArticleRating>;
 
     expect(insertedArticleRating.feedback).toBe("Тестовый фидбэк");
   });

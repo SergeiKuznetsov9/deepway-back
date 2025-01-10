@@ -1,5 +1,5 @@
 import { MongoClient, ObjectId } from "mongodb";
-import { Article, ArticlesGetQuery } from "../types/models/article";
+import { Article, ArticlesGetQuery } from "../types/models/article-types";
 
 export class ArticlesService {
   private collection;

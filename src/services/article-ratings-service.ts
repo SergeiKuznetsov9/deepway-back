@@ -2,23 +2,22 @@ import { MongoClient } from "mongodb";
 import {
   ArticleRating,
   ArticleRatingGetQuery,
-  ArticleRatingPostBody,
-} from "../types/models/article-rating";
+} from "../types/models/article-rating-types";
 
 export class ArticleRatingsService {
   private collection;
 
   constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection("article-ratings");
+    this.collection = client
+      .db(dbName)
+      .collection<ArticleRating>("article-ratings");
   }
 
   async getArticleRating(articleRatingGetQuery: ArticleRatingGetQuery) {
-    return (await this.collection.findOne(
-      articleRatingGetQuery
-    )) as ArticleRating;
+    return await this.collection.findOne(articleRatingGetQuery);
   }
 
-  async postArticleRating(articleRatingPostBody: ArticleRatingPostBody) {
+  async postArticleRating(articleRatingPostBody: ArticleRating) {
     return await this.collection.insertOne(articleRatingPostBody);
   }
 }

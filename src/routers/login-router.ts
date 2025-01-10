@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 
-import { ErrorMessage } from "../types/models/messages";
-import { User } from "../types/models/user";
+import { ErrorMessage } from "../types/models/messages-types";
+import { User } from "../types/models/user-types";
 import { LoginService } from "../services/login-service";
 
 export const getLoginRouter = (loginService: LoginService) => {

@@ -1,5 +1,5 @@
 import { MongoClient, ObjectId } from "mongodb";
-import { Profile, ProfilePutBody } from "src/types/models/profile";
+import { Profile, ProfilePutBody } from "src/types/models/profile-types";
 
 export class ProfileService {
   private collection;

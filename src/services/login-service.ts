@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { User, UserCredentials } from "../types/models/user";
+import { User, UserCredentials } from "../types/models/user-types";
 
 export class LoginService {
   private collection;

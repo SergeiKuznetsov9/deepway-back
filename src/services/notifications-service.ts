@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { Notification } from "../types/models/notification";
+import { Notification } from "../types/models/notification-types";
 
 export class NotificationsService {
   private collection;

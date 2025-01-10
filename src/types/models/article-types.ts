@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { User } from "./user";
+import { User } from "./user-types";
 
 type ArticleType = "IT" | "ECONOMICS" | "SCIENCE";
 

@@ -1,12 +1,12 @@
 import { Response, Router } from "express";
+import { WithId } from "mongodb";
 
-import { ErrorMessage, MessageWithEntityId } from "../types/models/messages";
-import { RequestWithBody, RequestWithQuery } from "../types/types";
+import { ErrorMessage, MessageWithEntityId } from "../types/models/messages-types";
+import { RequestWithBody, RequestWithQuery } from "../types/primary-types";
 import {
   ArticleRating,
   ArticleRatingGetQuery,
-  ArticleRatingPostBody,
-} from "../types/models/article-rating";
+} from "../types/models/article-rating-types";
 import { ArticleRatingsService } from "../services/article-ratings-service";
 import {
   getArticleRatingGetQueryValidator,
@@ -25,7 +25,7 @@ export const getArticleRatingsRouter = (
     inputValidationMiddleware,
     async (
       req: RequestWithQuery<ArticleRatingGetQuery>,
-      res: Response<ArticleRating | ErrorMessage>
+      res: Response<WithId<ArticleRating> | ErrorMessage | null>
     ) => {
       try {
         const articleRating = await articleRatingsService.getArticleRating(
@@ -44,7 +44,7 @@ export const getArticleRatingsRouter = (
     getArticleRatingPostBodyValidator(),
     inputValidationMiddleware,
     async (
-      req: RequestWithBody<ArticleRatingPostBody>,
+      req: RequestWithBody<ArticleRating>,
       res: Response<MessageWithEntityId | ErrorMessage>
     ) => {
       try {

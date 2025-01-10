@@ -1,13 +1,13 @@
 import { Router, Response } from "express";
 
-import { ErrorMessage, SuccessMessage } from "../types/models/messages";
-import { RequestWithParams, RequestWithParamsAndBody } from "../types/types";
+import { ErrorMessage, SuccessMessage } from "../types/models/messages-types";
+import { RequestWithParams, RequestWithParamsAndBody } from "../types/primary-types";
 import {
   Profile,
   ProfileGetParams,
   ProfilePutBody,
   ProfilePutParams,
-} from "../types/models/profile";
+} from "../types/models/profile-types";
 import { ProfileService } from "../services/profile-service";
 import {
   getProfileGetParamsValidator,

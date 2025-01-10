@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { CommentGetQuery, CommentPostBody } from "../types/models/comment";
+import { CommentGetQuery, CommentPostBody } from "../types/models/comment-types";
 
 export class CommentsService {
   private collection;

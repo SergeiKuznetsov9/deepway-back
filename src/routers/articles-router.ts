@@ -3,9 +3,9 @@ import {
   Article,
   ArticleGetParams,
   ArticlesGetQuery,
-} from "../types/models/article";
-import { ErrorMessage } from "../types/models/messages";
-import { RequestWithParams, RequestWithQuery } from "../types/types";
+} from "../types/models/article-types";
+import { ErrorMessage } from "../types/models/messages-types";
+import { RequestWithParams, RequestWithQuery } from "../types/primary-types";
 import { ArticlesService } from "../services/articles-service";
 import {
   getArticlesGetQueryValidator,

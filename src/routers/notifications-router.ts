@@ -1,11 +1,11 @@
 import { Router, Response } from "express";
 
-import { ErrorMessage } from "../types/models/messages";
-import { RequestWithParams } from "../types/types";
+import { ErrorMessage } from "../types/models/messages-types";
+import { RequestWithParams } from "../types/primary-types";
 import {
   Notification,
   NotificationGetParams,
-} from "../types/models/notification";
+} from "../types/models/notification-types";
 import { NotificationsService } from "../services/notifications-service";
 import { getNotificationGetParamsValidator } from "../middlewares/inputValidators/notifications-validators";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
