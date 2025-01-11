@@ -45,15 +45,15 @@ export type Article = {
   user?: User;
 };
 
-export type ArticlesGetQuery = {
-  _expand?: "user";
+export type ArticlesGetQuery = Partial<{
+  _expand: "user";
   _sort: "created" | "title" | "views";
   _page: string;
   _limit: string;
   _order: "desc" | "asc";
   q: string;
   type: "ALL" | "IT" | "ECONOMICS" | "SCIENCE";
-};
+}>;
 
 export type ArticleGetParams = {
   id: string;

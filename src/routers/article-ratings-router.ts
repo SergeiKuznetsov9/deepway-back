@@ -10,15 +10,15 @@ import {
   ArticleRating,
   ArticleRatingGetQuery,
 } from "../types/models/article-rating-types";
-import { ArticleRatingsService } from "../services/article-ratings-service";
 import {
   getArticleRatingGetQueryValidator,
   getArticleRatingPostBodyValidator,
 } from "../middlewares/inputValidators/articles-rating-validators";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
+import { ArticleRatingsManager } from "../managers/article-ratings-manager";
 
 export const getArticleRatingsRouter = (
-  articleRatingsService: ArticleRatingsService
+  manager: ArticleRatingsManager
 ): Router => {
   const router = Router();
 
@@ -31,9 +31,7 @@ export const getArticleRatingsRouter = (
       res: Response<WithId<ArticleRating> | ErrorMessage | null>
     ) => {
       try {
-        const articleRating = await articleRatingsService.getArticleRating(
-          req.query
-        );
+        const articleRating = await manager.handleGetArticleRating(req);
         res.status(200).json(articleRating);
       } catch (error) {
         console.error("Ошибка получения данных", error);
@@ -51,9 +49,7 @@ export const getArticleRatingsRouter = (
       res: Response<MessageWithEntityId | ErrorMessage>
     ) => {
       try {
-        const postResult = await articleRatingsService.postArticleRating(
-          req.body
-        );
+        const postResult = await manager.handlePostArticleRating(req);
         res.status(201).json(postResult);
       } catch (error) {
         console.error("Ошибка сохранения данных", error);

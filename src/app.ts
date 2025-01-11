@@ -1,5 +1,6 @@
 import express, { Express, Request, Response, NextFunction } from "express";
-import { Db, MongoClient } from "mongodb";
+import { Db } from "mongodb";
+
 import { getLoginRouter } from "./routers/login-router";
 import { getArticleRouter } from "./routers/articles-router";
 import { getProfileRouter } from "./routers/profile-router";
@@ -12,11 +13,14 @@ import { CommentsService } from "./services/comments-service";
 import { LoginService } from "./services/login-service";
 import { NotificationsService } from "./services/notifications-service";
 import { ProfileService } from "./services/profile-service";
+import { ArticleRatingsManager } from "./managers/article-ratings-manager";
+import { ArticlesManager } from "./managers/articles-manager";
+import { CommentsManager } from "./managers/comments-manager";
+import { LoginManager } from "./managers/login-manager";
+import { ProfileManager } from "./managers/profile-manager";
+import { NotificationsManager } from "./managers/notifications-manager";
 
-export const createApp = (
-  mongoDb: Db
-): Express => {
-  console.log(process.env)
+export const createApp = (mongoDb: Db): Express => {
   const app: Express = express();
 
   app.use((req: Request, res: Response, next: NextFunction): void => {
@@ -45,27 +49,31 @@ export const createApp = (
     res.json("Deepway is runing");
   });
 
-  app.use(
-    "/articles",
-    getArticleRouter(new ArticlesService(mongoDb))
+  const articleRatingsService = new ArticleRatingsService(mongoDb);
+  const articleRatingsManager = new ArticleRatingsManager(
+    articleRatingsService
   );
-  app.use(
-    "/article-ratings",
-    getArticleRatingsRouter(new ArticleRatingsService(mongoDb))
-  );
-  app.use(
-    "/comments",
-    getCommentsRouter(new CommentsService(mongoDb))
-  );
-  app.use("/login", getLoginRouter(new LoginService(mongoDb)));
-  app.use(
-    "/profile",
-    getProfileRouter(new ProfileService(mongoDb))
-  );
-  app.use(
-    "/notifications",
-    getNotificationsRouter(new NotificationsService(mongoDb))
-  );
+  app.use("/article-ratings", getArticleRatingsRouter(articleRatingsManager));
+
+  const articlesService = new ArticlesService(mongoDb);
+  const articlesManager = new ArticlesManager(articlesService);
+  app.use("/articles", getArticleRouter(articlesManager));
+
+  const commentsService = new CommentsService(mongoDb);
+  const commentsManager = new CommentsManager(commentsService);
+  app.use("/comments", getCommentsRouter(commentsManager));
+
+  const loginService = new LoginService(mongoDb);
+  const loginManager = new LoginManager(loginService);
+  app.use("/login", getLoginRouter(loginManager));
+
+  const profileService = new ProfileService(mongoDb);
+  const profileManager = new ProfileManager(profileService);
+  app.use("/profile", getProfileRouter(profileManager));
+
+  const notificationsService = new NotificationsService(mongoDb);
+  const notificationsManager = new NotificationsManager(notificationsService);
+  app.use("/notifications", getNotificationsRouter(notificationsManager));
 
   return app;
 };

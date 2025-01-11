@@ -6,14 +6,14 @@ import {
 } from "../types/models/article-types";
 import { ErrorMessage } from "../types/models/messages-types";
 import { RequestWithParams, RequestWithQuery } from "../types/primary-types";
-import { ArticlesService } from "../services/articles-service";
 import {
   getArticlesGetQueryValidator,
   getArticleGetParamsValidator,
 } from "../middlewares/inputValidators/articles-validators";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
+import { ArticlesManager } from "../managers/articles-manager";
 
-export const getArticleRouter = (articlesService: ArticlesService) => {
+export const getArticleRouter = (manager: ArticlesManager) => {
   const router = Router();
 
   router.get(
@@ -25,7 +25,7 @@ export const getArticleRouter = (articlesService: ArticlesService) => {
       res: Response<Article[] | ErrorMessage>
     ) => {
       try {
-        const articles = await articlesService.getArticles(req.query);
+        const articles = await manager.handleGetArticles(req);
         res.json(articles);
       } catch (error) {
         console.error("Ошибка чтения данных", error);
@@ -43,7 +43,7 @@ export const getArticleRouter = (articlesService: ArticlesService) => {
       res: Response<Article | ErrorMessage>
     ) => {
       try {
-        const article = await articlesService.getArticleById(req.params.id);
+        const article = await manager.handleGetArticleById(req);
         res.json(article);
       } catch (error) {
         console.error("Ошибка чтения данных", error);

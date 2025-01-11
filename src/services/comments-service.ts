@@ -4,6 +4,7 @@ import {
   CommentGetQuery,
   CommentPostBody,
 } from "../types/models/comment-types";
+import { Pipeline } from "../types/primary-types";
 
 export class CommentsService {
   private collection;
@@ -13,7 +14,7 @@ export class CommentsService {
   }
 
   async getComments({ _expand, articleId }: CommentGetQuery) {
-    const pipeline: any[] = [{ $match: { articleId: articleId } }];
+    const pipeline: Pipeline = [{ $match: { articleId: articleId } }];
 
     if (_expand === "user") {
       pipeline.push(
@@ -45,7 +46,6 @@ export class CommentsService {
   }
 
   async postComment(postCommentBody: CommentPostBody) {
-    const postResult = await this.collection.insertOne(postCommentBody);
-    return { _id: postResult.insertedId.toString() };
+    return await this.collection.insertOne(postCommentBody);
   }
 }

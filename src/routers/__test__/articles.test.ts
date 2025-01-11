@@ -126,8 +126,8 @@ describe("Articles API", () => {
 
   it("GET /articles?_sort=created&_order=asc", async () => {
     const query: {
-      _sort: ArticlesGetQuery["_sort"];
-      _order: ArticlesGetQuery["_order"];
+      _sort: NonNullable<ArticlesGetQuery["_sort"]>;
+      _order: NonNullable<ArticlesGetQuery["_order"]>;
     } = {
       _sort: "created",
       _order: "asc",
@@ -147,8 +147,8 @@ describe("Articles API", () => {
 
   it("GET /articles?_sort=created&_order=desc", async () => {
     const query: {
-      _sort: ArticlesGetQuery["_sort"];
-      _order: ArticlesGetQuery["_order"];
+      _sort: NonNullable<ArticlesGetQuery["_sort"]>;
+      _order: NonNullable<ArticlesGetQuery["_order"]>;
     } = {
       _sort: "created",
       _order: "desc",
@@ -168,8 +168,8 @@ describe("Articles API", () => {
 
   it("GET /articles?_sort=views&_order=asc", async () => {
     const query: {
-      _sort: ArticlesGetQuery["_sort"];
-      _order: ArticlesGetQuery["_order"];
+      _sort: NonNullable<ArticlesGetQuery["_sort"]>;
+      _order: NonNullable<ArticlesGetQuery["_order"]>;
     } = {
       _sort: "views",
       _order: "asc",
@@ -187,8 +187,8 @@ describe("Articles API", () => {
 
   it("GET /articles?_sort=views&_order=desc", async () => {
     const query: {
-      _sort: ArticlesGetQuery["_sort"];
-      _order: ArticlesGetQuery["_order"];
+      _sort: NonNullable<ArticlesGetQuery["_sort"]>;
+      _order: NonNullable<ArticlesGetQuery["_order"]>;
     } = {
       _sort: "views",
       _order: "desc",

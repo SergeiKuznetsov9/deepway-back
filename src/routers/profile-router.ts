@@ -1,4 +1,5 @@
 import { Router, Response } from "express";
+import { WithId } from "mongodb";
 
 import { ErrorMessage, SuccessMessage } from "../types/models/messages-types";
 import {
@@ -11,16 +12,15 @@ import {
   ProfilePutBody,
   ProfilePutParams,
 } from "../types/models/profile-types";
-import { ProfileService } from "../services/profile-service";
 import {
   getProfileGetParamsValidator,
   getProfilePutBodyValidator,
   getProfilePutParamsValidator,
 } from "../middlewares/inputValidators/profile-validators";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
-import { WithId } from "mongodb";
+import { ProfileManager } from "../managers/profile-manager";
 
-export const getProfileRouter = (profileService: ProfileService) => {
+export const getProfileRouter = (manager: ProfileManager) => {
   const router = Router();
 
   router.get(
@@ -32,9 +32,7 @@ export const getProfileRouter = (profileService: ProfileService) => {
       res: Response<WithId<Profile> | ErrorMessage | null>
     ) => {
       try {
-        const profile = await profileService.getProfileByUserId(
-          req.params.userId
-        );
+        const profile = await manager.handleGetProfileByUserId(req);
         res.json(profile);
       } catch (error) {
         console.error("Ошибка чтения данных", error);
@@ -53,10 +51,7 @@ export const getProfileRouter = (profileService: ProfileService) => {
       res: Response<ErrorMessage | SuccessMessage>
     ): Promise<void> => {
       try {
-        const updateResult = await profileService.updateProfileByUserId(
-          req.params.userId,
-          req.body
-        );
+        const updateResult = await manager.handleUpdateProfileByUserId(req);
         if (updateResult.matchedCount === 0) {
           res.status(404).json({ error: "Профиль не найден" });
           return;

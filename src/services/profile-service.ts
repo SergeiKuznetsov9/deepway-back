@@ -1,5 +1,5 @@
 import { Db, ObjectId } from "mongodb";
-import { Profile, ProfilePutBody } from "src/types/models/profile-types";
+import { Profile, ProfilePutBody } from "../types/models/profile-types";
 
 export class ProfileService {
   private collection;

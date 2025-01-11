@@ -10,14 +10,14 @@ import {
   CommentGetQuery,
   CommentPostBody,
 } from "../types/models/comment-types";
-import { CommentsService } from "../services/comments-service";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 import {
   getCommentGetQueryValidator,
   getCommentPostBodyValidator,
 } from "../middlewares/inputValidators/comments-validators";
+import { CommentsManager } from "../managers/comments-manager";
 
-export const getCommentsRouter = (commentsService: CommentsService) => {
+export const getCommentsRouter = (manager: CommentsManager) => {
   const router = Router();
 
   router.get(
@@ -29,7 +29,7 @@ export const getCommentsRouter = (commentsService: CommentsService) => {
       res: Response<Comment[] | ErrorMessage>
     ) => {
       try {
-        const comments = await commentsService.getComments(req.query);
+        const comments = await manager.handleGetComments(req);
         res.json(comments);
       } catch (error) {
         console.error("Ошибка чтения данных", error);
@@ -47,7 +47,7 @@ export const getCommentsRouter = (commentsService: CommentsService) => {
       res: Response<MessageWithEntityId | ErrorMessage>
     ) => {
       try {
-        const postResult = await commentsService.postComment(req.body);
+        const postResult = await manager.handlePostComment(req);
         res.status(201).json(postResult);
       } catch (error) {
         console.error("Ошибка сохранения данных", error);

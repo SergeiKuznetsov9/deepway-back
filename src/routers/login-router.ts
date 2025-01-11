@@ -1,28 +1,35 @@
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 
 import { ErrorMessage } from "../types/models/messages-types";
-import { User } from "../types/models/user-types";
-import { LoginService } from "../services/login-service";
+import { User, UserCredentials } from "../types/models/user-types";
+import { LoginManager } from "../managers/login-manager";
+import { RequestWithBody } from "../types/primary-types";
 
-export const getLoginRouter = (loginService: LoginService) => {
+export const getLoginRouter = (manager: LoginManager) => {
   const router = Router();
 
-  router.post("/", async (req: Request, res: Response<User | ErrorMessage>) => {
-    try {
-      const user = await loginService.getUser(req.body);
+  router.post(
+    "/",
+    async (
+      req: RequestWithBody<UserCredentials>,
+      res: Response<User | ErrorMessage>
+    ) => {
+      try {
+        const user = await manager.handleGetUser(req);
 
-      if (user) {
-        res.status(200).json(user);
-      } else {
-        res.status(404).json({
-          error: "Пользователь с таким именем и паролем не существует",
-        });
+        if (user) {
+          res.status(200).json(user);
+        } else {
+          res.status(404).json({
+            error: "Пользователь с таким именем и паролем не существует",
+          });
+        }
+      } catch (error) {
+        console.error("Ошибка сохранения данных", error);
+        res.status(500).json({ error: "Ошибка сохранения данных" });
       }
-    } catch (error) {
-      console.error("Ошибка сохранения данных", error);
-      res.status(500).json({ error: "Ошибка сохранения данных" });
     }
-  });
+  );
 
   return router;
 };

@@ -6,13 +6,11 @@ import {
   Notification,
   NotificationGetParams,
 } from "../types/models/notification-types";
-import { NotificationsService } from "../services/notifications-service";
 import { getNotificationGetParamsValidator } from "../middlewares/inputValidators/notifications-validators";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
+import { NotificationsManager } from "../managers/notifications-manager";
 
-export const getNotificationsRouter = (
-  notificationsService: NotificationsService
-) => {
+export const getNotificationsRouter = (manager: NotificationsManager) => {
   const router = Router();
 
   router.get(
@@ -24,11 +22,7 @@ export const getNotificationsRouter = (
       res: Response<Notification[] | ErrorMessage>
     ) => {
       try {
-        const notifications =
-          await notificationsService.getNotificationsByUserId(
-            req.params.userId
-          );
-
+        const notifications = await manager.handleGetNotificationsByUserId(req);
         res.json(notifications);
       } catch (error) {
         console.error("Ошибка чтения данных", error);
