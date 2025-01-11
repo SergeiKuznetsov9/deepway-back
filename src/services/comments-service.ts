@@ -1,16 +1,15 @@
-import { MongoClient, WithId } from "mongodb";
+import { Db, WithId } from "mongodb";
 import {
   Comment,
   CommentGetQuery,
   CommentPostBody,
 } from "../types/models/comment-types";
-import { MessageWithEntityId } from "src/types/models/messages-types";
 
 export class CommentsService {
   private collection;
 
-  constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection<Comment>("comments");
+  constructor(mongoDb: Db) {
+    this.collection = mongoDb.collection<Comment>("comments");
   }
 
   async getComments({ _expand, articleId }: CommentGetQuery) {

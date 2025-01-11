@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { Db } from "mongodb";
 import {
   ArticleRating,
   ArticleRatingGetQuery,
@@ -7,10 +7,8 @@ import {
 export class ArticleRatingsService {
   private collection;
 
-  constructor(client: MongoClient, dbName: string) {
-    this.collection = client
-      .db(dbName)
-      .collection<ArticleRating>("article-ratings");
+  constructor(mongoDb: Db) {
+    this.collection = mongoDb.collection<ArticleRating>("article-ratings");
   }
 
   async getArticleRating(articleRatingGetQuery: ArticleRatingGetQuery) {

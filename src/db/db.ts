@@ -3,11 +3,13 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 
 const mongoUri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CLUSTER}/?retryWrites=true&w=majority&appName=Cluster-deepway`;
 // const mongoUri = `mongodb://0.0.0.0:27017`;
+const mongoDBName = process.env.MONGO_DB_NAME;
+const environment = process.env.NODE_ENV;
 
 export const runDb = async () => {
   let client: MongoClient;
 
-  if (process.env.NODE_ENV === "production") {
+  if (environment === "production") {
     // Использование реальной базы данных
     client = new MongoClient(mongoUri, {
       serverApi: {
@@ -35,5 +37,7 @@ export const runDb = async () => {
     console.log("Connected successfuly to MOCK mongo server");
   }
 
-  return client;
+  let db = client.db(mongoDBName)
+
+  return db;
 };

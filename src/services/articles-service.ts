@@ -1,11 +1,11 @@
-import { MongoClient, ObjectId, WithId } from "mongodb";
+import { Db, ObjectId, WithId } from "mongodb";
 import { Article, ArticlesGetQuery } from "../types/models/article-types";
 
 export class ArticlesService {
   private collection;
 
-  constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection<Article>("articles");
+  constructor(mongoDb: Db) {
+    this.collection = mongoDb.collection<Article>("articles");
   }
 
   async getArticles(requestQuery: ArticlesGetQuery) {

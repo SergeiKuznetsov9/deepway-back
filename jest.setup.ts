@@ -4,9 +4,8 @@ import { runDb } from "./src/db/db";
 dotenv.config({ path: ".env.test" });
 
 export const initTestDB = async () => {
-  const client = await runDb();
-  const app = createApp(client, "deepway_test");
-  const db = client.db("deepway_test");
+  const mongoDb = await runDb();
+  const app = createApp(mongoDb);
 
-  return { app, db };
+  return { app, db: mongoDb };
 };

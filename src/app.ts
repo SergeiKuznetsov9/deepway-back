@@ -1,5 +1,5 @@
 import express, { Express, Request, Response, NextFunction } from "express";
-import { MongoClient } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 import { getLoginRouter } from "./routers/login-router";
 import { getArticleRouter } from "./routers/articles-router";
 import { getProfileRouter } from "./routers/profile-router";
@@ -14,9 +14,9 @@ import { NotificationsService } from "./services/notifications-service";
 import { ProfileService } from "./services/profile-service";
 
 export const createApp = (
-  client: MongoClient,
-  mongoDbName: string
+  mongoDb: Db
 ): Express => {
+  console.log(process.env)
   const app: Express = express();
 
   app.use((req: Request, res: Response, next: NextFunction): void => {
@@ -47,24 +47,24 @@ export const createApp = (
 
   app.use(
     "/articles",
-    getArticleRouter(new ArticlesService(client, mongoDbName))
+    getArticleRouter(new ArticlesService(mongoDb))
   );
   app.use(
     "/article-ratings",
-    getArticleRatingsRouter(new ArticleRatingsService(client, mongoDbName))
+    getArticleRatingsRouter(new ArticleRatingsService(mongoDb))
   );
   app.use(
     "/comments",
-    getCommentsRouter(new CommentsService(client, mongoDbName))
+    getCommentsRouter(new CommentsService(mongoDb))
   );
-  app.use("/login", getLoginRouter(new LoginService(client, mongoDbName)));
+  app.use("/login", getLoginRouter(new LoginService(mongoDb)));
   app.use(
     "/profile",
-    getProfileRouter(new ProfileService(client, mongoDbName))
+    getProfileRouter(new ProfileService(mongoDb))
   );
   app.use(
     "/notifications",
-    getNotificationsRouter(new NotificationsService(client, mongoDbName))
+    getNotificationsRouter(new NotificationsService(mongoDb))
   );
 
   return app;

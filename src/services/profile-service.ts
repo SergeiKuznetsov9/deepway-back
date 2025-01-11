@@ -1,11 +1,11 @@
-import { MongoClient, ObjectId } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { Profile, ProfilePutBody } from "src/types/models/profile-types";
 
 export class ProfileService {
   private collection;
 
-  constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection<Profile>("profile");
+  constructor(mongoDb: Db) {
+    this.collection = mongoDb.collection<Profile>("profile");
   }
 
   async getProfileByUserId(userId: string) {
