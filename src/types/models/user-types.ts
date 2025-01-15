@@ -1,5 +1,5 @@
-type Role = "USER" | "MANAGER" | "ADMIN";
-type Features = Record<string, boolean>;
+export type Role = "USER" | "MANAGER" | "ADMIN";
+export type Features = Record<string, boolean>;
 
 export type User = {
   username: string;

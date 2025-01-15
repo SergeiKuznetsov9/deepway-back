@@ -18,6 +18,9 @@ export class CommentsManager {
 
   async handlePostComment(req: RequestWithBody<CommentPostBody>) {
     const postResult = await this.service.postComment(req.body);
+    if (!postResult || !postResult.insertedId) {
+      throw new Error("Не удалось сохранить коментарий");
+    }
     return { _id: postResult.insertedId.toString() };
   }
 }

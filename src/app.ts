@@ -19,6 +19,10 @@ import { CommentsManager } from "./managers/comments-manager";
 import { LoginManager } from "./managers/login-manager";
 import { ProfileManager } from "./managers/profile-manager";
 import { NotificationsManager } from "./managers/notifications-manager";
+import { UserService } from "./services/user-service";
+import { UserManager } from "./managers/user-manager";
+import { getUserRouter } from "./routers/user-router";
+import { errorHandlerMiddleware } from "./middlewares/error-handler-middleware";
 
 export const createApp = (mongoDb: Db): Express => {
   const app: Express = express();
@@ -67,6 +71,10 @@ export const createApp = (mongoDb: Db): Express => {
   const loginManager = new LoginManager(loginService);
   app.use("/login", getLoginRouter(loginManager));
 
+  const userService = new UserService(mongoDb);
+  const userManager = new UserManager(userService);
+  app.use("/user", getUserRouter(userManager));
+
   const profileService = new ProfileService(mongoDb);
   const profileManager = new ProfileManager(profileService);
   app.use("/profile", getProfileRouter(profileManager));
@@ -74,6 +82,8 @@ export const createApp = (mongoDb: Db): Express => {
   const notificationsService = new NotificationsService(mongoDb);
   const notificationsManager = new NotificationsManager(notificationsService);
   app.use("/notifications", getNotificationsRouter(notificationsManager));
+
+  app.use(errorHandlerMiddleware);
 
   return app;
 };
