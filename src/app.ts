@@ -23,9 +23,12 @@ import { UserService } from "./services/user-service";
 import { UserManager } from "./managers/user-manager";
 import { getUserRouter } from "./routers/user-router";
 import { errorHandlerMiddleware } from "./middlewares/error-handler-middleware";
+import { JwtService } from "./services/jwt-service";
+import { getAuthMiddleware } from "./middlewares/auth-middleware";
 
 export const createApp = (mongoDb: Db): Express => {
   const app: Express = express();
+  const jwtService = new JwtService();
 
   app.use((req: Request, res: Response, next: NextFunction): void => {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -48,6 +51,7 @@ export const createApp = (mongoDb: Db): Express => {
 
   const jsonBodyMiddleware = express.json();
   app.use(jsonBodyMiddleware);
+  app.use(getAuthMiddleware(jwtService));
 
   app.get("/", (_, res: Response<string>) => {
     res.json("Deepway is runing");
@@ -72,7 +76,7 @@ export const createApp = (mongoDb: Db): Express => {
   app.use("/login", getLoginRouter(loginManager));
 
   const userService = new UserService(mongoDb);
-  const userManager = new UserManager(userService);
+  const userManager = new UserManager(userService, jwtService);
   app.use("/user", getUserRouter(userManager));
 
   const profileService = new ProfileService(mongoDb);

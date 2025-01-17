@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { RequestWithBody } from "../types/primary-types";
 import { UserService } from "../services/user-service";
+import { JwtService } from "../services/jwt-service";
 import {
   UserPostInputDTO,
   UserLoginInputDTO,
@@ -12,16 +13,18 @@ import { DatabaseError } from "../errors/database-error";
 import { AuthError } from "../errors/auth-error";
 
 export class UserManager {
-  private service;
+  private userService;
+  private jwtService;
 
-  constructor(service: UserService) {
-    this.service = service;
+  constructor(userService: UserService, jwtService: JwtService) {
+    this.userService = userService;
+    this.jwtService = jwtService;
   }
 
   async handlePostUser(req: RequestWithBody<UserPostInputDTO>) {
     const { login, password } = req.body;
 
-    const userFromDb = await this.service.getUserByLogin(login);
+    const userFromDb = await this.userService.getUserByLogin(login);
     if (userFromDb !== null) {
       throw new RegistrationError(Errors.LoginConflict);
     }
@@ -38,7 +41,7 @@ export class UserManager {
       features: {},
     };
 
-    const postResult = await this.service.postUser(userEntity);
+    const postResult = await this.userService.postUser(userEntity);
     if (!postResult || !postResult.insertedId) {
       throw new DatabaseError(Errors.DBInsert);
     }
@@ -47,7 +50,7 @@ export class UserManager {
 
   async checkCredentials(req: RequestWithBody<UserLoginInputDTO>) {
     const { login, password } = req.body;
-    const userFromDb = await this.service.getUserByLogin(login);
+    const userFromDb = await this.userService.getUserByLogin(login);
 
     if (!userFromDb) {
       throw new AuthError(Errors.Login);
@@ -63,13 +66,16 @@ export class UserManager {
     }
 
     const { _id, login: loginFromDb, createdAt, roles, features } = userFromDb;
+    const userId = _id.toString();
+    const token = this.jwtService.createJWT(userId);
 
     const userLoginOutputDTO: UserLoginOutputDTO = {
-      _id: _id.toString(),
+      _id: userId,
       login: loginFromDb,
       createdAt,
       roles,
       features,
+      token,
     };
 
     return userLoginOutputDTO;

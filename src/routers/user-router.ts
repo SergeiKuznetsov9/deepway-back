@@ -33,7 +33,7 @@ export const getUserRouter = (manager: UserManager) => {
     ) => {
       try {
         const userLoginOutputDTO = await manager.checkCredentials(req);
-        res.status(201).json(userLoginOutputDTO);
+        res.status(200).json(userLoginOutputDTO);
       } catch (error) {
         next(error);
       }

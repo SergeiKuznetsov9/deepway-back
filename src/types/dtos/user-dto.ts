@@ -16,4 +16,5 @@ export type UserLoginOutputDTO = {
   createdAt: Date;
   roles: Role[];
   features: Features;
+  token: string;
 };
