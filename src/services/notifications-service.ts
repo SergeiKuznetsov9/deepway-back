@@ -1,11 +1,11 @@
 import { Db } from "mongodb";
-import { Notification } from "../types/models/notification-types";
+import { NotificationEntity } from "../types/entities/notification-entity";
 
 export class NotificationsService {
   private collection;
 
   constructor(mongoDb: Db) {
-    this.collection = mongoDb.collection<Notification>("notifications");
+    this.collection = mongoDb.collection<NotificationEntity>("notifications");
   }
 
   async getNotificationsByUserId(userId: string) {
