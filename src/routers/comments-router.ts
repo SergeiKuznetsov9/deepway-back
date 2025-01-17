@@ -5,17 +5,17 @@ import {
   MessageWithEntityId,
 } from "../types/models/messages-types";
 import { RequestWithBody, RequestWithQuery } from "../types/primary-types";
-import {
-  Comment,
-  CommentGetQuery,
-  CommentPostBody,
-} from "../types/models/comment-types";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 import {
   getCommentGetQueryValidator,
   getCommentPostBodyValidator,
 } from "../middlewares/inputValidators/comments-validators";
 import { CommentsManager } from "../managers/comments-manager";
+import {
+  CommentGetInputDTO,
+  CommentGetOutputDTO,
+  CommentPostInputDTO,
+} from "../types/dtos/comment-dto";
 
 export const getCommentsRouter = (manager: CommentsManager) => {
   const router = Router();
@@ -25,8 +25,8 @@ export const getCommentsRouter = (manager: CommentsManager) => {
     getCommentGetQueryValidator(),
     inputValidationMiddleware,
     async (
-      req: RequestWithQuery<CommentGetQuery>,
-      res: Response<Comment[] | ErrorMessage>
+      req: RequestWithQuery<CommentGetInputDTO>,
+      res: Response<CommentGetOutputDTO[] | ErrorMessage>
     ) => {
       try {
         const comments = await manager.handleGetComments(req);
@@ -43,7 +43,7 @@ export const getCommentsRouter = (manager: CommentsManager) => {
     getCommentPostBodyValidator(),
     inputValidationMiddleware,
     async (
-      req: RequestWithBody<CommentPostBody>,
+      req: RequestWithBody<CommentPostInputDTO>,
       res: Response<MessageWithEntityId | ErrorMessage>
     ) => {
       try {
