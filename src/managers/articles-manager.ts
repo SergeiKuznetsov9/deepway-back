@@ -1,7 +1,7 @@
 import {
-  ArticleGetParams,
-  ArticlesGetQuery,
-} from "../types/models/article-types";
+  ArticleGetInputDTO,
+  ArticlesGetInputDTO,
+} from "../types/dtos/article-dto";
 import { ArticlesService } from "../services/articles-service";
 import { RequestWithParams, RequestWithQuery } from "../types/primary-types";
 import { ObjectId } from "mongodb";
@@ -13,11 +13,11 @@ export class ArticlesManager {
     this.service = service;
   }
 
-  async handleGetArticles(req: RequestWithQuery<ArticlesGetQuery>) {
+  async handleGetArticles(req: RequestWithQuery<ArticlesGetInputDTO>) {
     return await this.service.getArticles(req.query);
   }
 
-  async handleGetArticleById(req: RequestWithParams<ArticleGetParams>) {
+  async handleGetArticleById(req: RequestWithParams<ArticleGetInputDTO>) {
     const objectId = new ObjectId(req.params.id);
     return await this.service.getArticleById(objectId);
   }

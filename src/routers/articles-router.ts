@@ -1,9 +1,4 @@
 import { Response, Router } from "express";
-import {
-  Article,
-  ArticleGetParams,
-  ArticlesGetQuery,
-} from "../types/models/article-types";
 import { ErrorMessage } from "../types/models/messages-types";
 import { RequestWithParams, RequestWithQuery } from "../types/primary-types";
 import {
@@ -12,6 +7,11 @@ import {
 } from "../middlewares/inputValidators/articles-validators";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 import { ArticlesManager } from "../managers/articles-manager";
+import {
+  ArticleGetInputDTO,
+  ArticleOutputDTO,
+  ArticlesGetInputDTO,
+} from "../types/dtos/article-dto";
 
 export const getArticleRouter = (manager: ArticlesManager) => {
   const router = Router();
@@ -21,8 +21,8 @@ export const getArticleRouter = (manager: ArticlesManager) => {
     getArticlesGetQueryValidator(),
     inputValidationMiddleware,
     async (
-      req: RequestWithQuery<ArticlesGetQuery>,
-      res: Response<Article[] | ErrorMessage>
+      req: RequestWithQuery<ArticlesGetInputDTO>,
+      res: Response<ArticleOutputDTO[] | ErrorMessage>
     ) => {
       try {
         const articles = await manager.handleGetArticles(req);
@@ -39,8 +39,8 @@ export const getArticleRouter = (manager: ArticlesManager) => {
     getArticleGetParamsValidator(),
     inputValidationMiddleware,
     async (
-      req: RequestWithParams<ArticleGetParams>,
-      res: Response<Article | ErrorMessage>
+      req: RequestWithParams<ArticleGetInputDTO>,
+      res: Response<ArticleOutputDTO | ErrorMessage>
     ) => {
       try {
         const article = await manager.handleGetArticleById(req);

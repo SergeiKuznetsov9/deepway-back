@@ -1,12 +1,13 @@
 import { Db, ObjectId, WithId } from "mongodb";
-import { Article, ArticlesGetQuery } from "../types/models/article-types";
 import { Pipeline } from "../types/primary-types";
+import { ArticleEntity } from "../types/entities/article-entity";
+import { ArticlesGetInputDTO } from "../types/dtos/article-dto";
 
 export class ArticlesService {
   private collection;
 
   constructor(mongoDb: Db) {
-    this.collection = mongoDb.collection<Article>("articles");
+    this.collection = mongoDb.collection<ArticleEntity>("articles");
   }
 
   async getArticles({
@@ -17,7 +18,7 @@ export class ArticlesService {
     _order,
     q,
     type,
-  }: ArticlesGetQuery) {
+  }: ArticlesGetInputDTO) {
     const pipeline: Pipeline = [];
 
     this.applyTypeFilter(pipeline, type);
@@ -26,7 +27,9 @@ export class ArticlesService {
     this.applyPagination(pipeline, _limit, _page);
     this.applyExpansion(pipeline, _expand);
 
-    return await this.collection.aggregate<WithId<Article>>(pipeline).toArray();
+    return await this.collection
+      .aggregate<WithId<ArticleEntity>>(pipeline)
+      .toArray();
   }
 
   async getArticleById(id: ObjectId) {
@@ -54,12 +57,12 @@ export class ArticlesService {
         { $unwind: "$user" },
         { $unset: ["userIdObject", "user.password"] },
       ])
-      .next()) as Article;
+      .next()) as ArticleEntity;
   }
 
   private applyTypeFilter = (
     pipeline: Pipeline,
-    type: ArticlesGetQuery["type"]
+    type: ArticlesGetInputDTO["type"]
   ) => {
     if (type && type !== "ALL") {
       pipeline.push({
@@ -72,7 +75,7 @@ export class ArticlesService {
 
   private applySearchFilter = (
     pipeline: Pipeline,
-    searchString: ArticlesGetQuery["q"]
+    searchString: ArticlesGetInputDTO["q"]
   ) => {
     if (searchString) {
       pipeline.push({
@@ -85,8 +88,8 @@ export class ArticlesService {
 
   private applySorting = (
     pipeline: Pipeline,
-    sort: ArticlesGetQuery["_sort"],
-    order: ArticlesGetQuery["_order"]
+    sort: ArticlesGetInputDTO["_sort"],
+    order: ArticlesGetInputDTO["_order"]
   ) => {
     if (!sort) return;
     const sortOrder = order === "desc" ? -1 : 1;
@@ -136,8 +139,8 @@ export class ArticlesService {
 
   private applyPagination = (
     pipeline: Pipeline,
-    limit: ArticlesGetQuery["_limit"],
-    page: ArticlesGetQuery["_page"]
+    limit: ArticlesGetInputDTO["_limit"],
+    page: ArticlesGetInputDTO["_page"]
   ) => {
     if (!limit) return;
 
@@ -147,7 +150,7 @@ export class ArticlesService {
 
   private applyExpansion = (
     pipeline: Pipeline,
-    expand: ArticlesGetQuery["_expand"]
+    expand: ArticlesGetInputDTO["_expand"]
   ) => {
     if (expand === "user") {
       pipeline.push(

@@ -24,7 +24,6 @@ import { UserManager } from "./managers/user-manager";
 import { getUserRouter } from "./routers/user-router";
 import { errorHandlerMiddleware } from "./middlewares/error-handler-middleware";
 import { JwtService } from "./services/jwt-service";
-import { getAuthMiddleware } from "./middlewares/auth-middleware";
 import { getEmailRouter } from "./routers/email-router";
 import { EmailService } from "./services/email-service";
 import { EmailManager } from "./managers/email-manager";
