@@ -54,7 +54,7 @@ export const createApp = (mongoDb: Db): Express => {
 
   const jsonBodyMiddleware = express.json();
   app.use(jsonBodyMiddleware);
-  app.use(getAuthMiddleware(jwtService));
+  // app.use(getAuthMiddleware(jwtService));
 
   app.get("/", (_, res: Response<string>) => {
     res.json("Deepway is runing");
