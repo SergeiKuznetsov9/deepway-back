@@ -40,7 +40,7 @@ export const getArticleRouter = (manager: ArticlesManager) => {
     inputValidationMiddleware,
     async (
       req: RequestWithParams<ArticleGetInputDTO>,
-      res: Response<ArticleOutputDTO | ErrorMessage>
+      res: Response<ArticleOutputDTO | ErrorMessage | null>
     ) => {
       try {
         const article = await manager.handleGetArticleById(req);

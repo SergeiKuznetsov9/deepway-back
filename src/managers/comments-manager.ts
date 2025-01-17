@@ -1,5 +1,6 @@
 import {
   CommentGetInputDTO,
+  CommentGetOutputDTO,
   CommentPostInputDTO,
 } from "../types/dtos/comment-dto";
 import { CommentsService } from "../services/comments-service";
@@ -13,7 +14,16 @@ export class CommentsManager {
   }
 
   async handleGetComments(req: RequestWithQuery<CommentGetInputDTO>) {
-    return await this.service.getComments(req.query);
+    const comments = await this.service.getComments(req.query);
+    const commentsAdapted: CommentGetOutputDTO[] = comments.map((comment) => ({
+      _id: comment._id.toString(),
+      text: comment.text,
+      articleId: comment.articleId,
+      userId: comment.userId,
+      user: comment.user,
+    }));
+
+    return commentsAdapted;
   }
 
   async handlePostComment(req: RequestWithBody<CommentPostInputDTO>) {

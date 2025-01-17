@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { User } from "../models/user-types";
 
 export type CommentGetOutputDTO = {
-  _id: ObjectId;
+  _id: string;
   text: string;
   articleId: string;
   userId: string;

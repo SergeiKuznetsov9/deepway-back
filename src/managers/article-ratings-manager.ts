@@ -1,5 +1,6 @@
 import {
   ArticleRatingGetInputDTO,
+  ArticleRatingGetOutputDTO,
   ArticleRatingPostInputDTO,
 } from "../types/dtos/article-rating-dto";
 import { ArticleRatingsService } from "../services/article-ratings-service";
@@ -15,7 +16,21 @@ export class ArticleRatingsManager {
   async handleGetArticleRating(
     req: RequestWithQuery<ArticleRatingGetInputDTO>
   ) {
-    return await this.service.getArticleRating(req.query);
+    const articleRating = await this.service.getArticleRating(req.query);
+
+    if (articleRating === null) {
+      return null;
+    }
+
+    const articleRatingAdapted: ArticleRatingGetOutputDTO = {
+      _id: articleRating._id.toString(),
+      articleId: articleRating.articleId,
+      userId: articleRating.userId,
+      rate: articleRating.rate,
+      feedback: articleRating.feedback,
+    };
+
+    return articleRatingAdapted;
   }
 
   async handlePostArticleRating(

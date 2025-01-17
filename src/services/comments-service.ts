@@ -5,6 +5,7 @@ import {
   CommentGetInputDTO,
   CommentPostInputDTO,
 } from "../types/dtos/comment-dto";
+import { User } from "../types/models/user-types";
 
 export class CommentsService {
   private collection;
@@ -43,7 +44,7 @@ export class CommentsService {
     }
 
     return await this.collection
-      .aggregate<WithId<CommentEntity>>(pipeline)
+      .aggregate<WithId<CommentEntity & { user?: User }>>(pipeline)
       .toArray();
   }
 

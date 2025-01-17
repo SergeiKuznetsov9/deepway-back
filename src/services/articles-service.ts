@@ -2,6 +2,7 @@ import { Db, ObjectId, WithId } from "mongodb";
 import { Pipeline } from "../types/primary-types";
 import { ArticleEntity } from "../types/entities/article-entity";
 import { ArticlesGetInputDTO } from "../types/dtos/article-dto";
+import { User } from "../types/models/user-types";
 
 export class ArticlesService {
   private collection;
@@ -28,13 +29,13 @@ export class ArticlesService {
     this.applyExpansion(pipeline, _expand);
 
     return await this.collection
-      .aggregate<WithId<ArticleEntity>>(pipeline)
+      .aggregate<WithId<ArticleEntity & { user?: User }>>(pipeline)
       .toArray();
   }
 
   async getArticleById(id: ObjectId) {
-    return (await this.collection
-      .aggregate([
+    return await this.collection
+      .aggregate<WithId<ArticleEntity & { user: User }>>([
         { $match: { _id: id } },
         {
           $addFields: {
@@ -57,7 +58,7 @@ export class ArticlesService {
         { $unwind: "$user" },
         { $unset: ["userIdObject", "user.password"] },
       ])
-      .next()) as ArticleEntity;
+      .next();
   }
 
   private applyTypeFilter = (

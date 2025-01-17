@@ -4,6 +4,7 @@ export type ArticleRatingGetInputDTO = {
 };
 
 export type ArticleRatingGetOutputDTO = {
+  _id: string;
   articleId: string;
   userId: string;
   rate: 1 | 2 | 3 | 4 | 5;

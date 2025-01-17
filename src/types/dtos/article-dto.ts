@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { ArticleBlock, ArticleType } from "../common/article-types";
 import { User } from "../models/user-types";
 
@@ -16,6 +17,7 @@ export type ArticleGetInputDTO = {
 };
 
 export type ArticleOutputDTO = {
+  _id: string;
   title: string;
   subtitle: string;
   img: string;
