@@ -25,6 +25,9 @@ import { getUserRouter } from "./routers/user-router";
 import { errorHandlerMiddleware } from "./middlewares/error-handler-middleware";
 import { JwtService } from "./services/jwt-service";
 import { getAuthMiddleware } from "./middlewares/auth-middleware";
+import { getEmailRouter } from "./routers/email-router";
+import { EmailService } from "./services/email-service";
+import { EmailManager } from "./managers/email-manager";
 
 export const createApp = (mongoDb: Db): Express => {
   const app: Express = express();
@@ -86,6 +89,10 @@ export const createApp = (mongoDb: Db): Express => {
   const notificationsService = new NotificationsService(mongoDb);
   const notificationsManager = new NotificationsManager(notificationsService);
   app.use("/notifications", getNotificationsRouter(notificationsManager));
+
+  const emailService = new EmailService();
+  const emailManager = new EmailManager(emailService);
+  app.use("/email", getEmailRouter(emailManager));
 
   app.use(errorHandlerMiddleware);
 
