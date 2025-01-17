@@ -1,6 +1,6 @@
 import { Router, Response, NextFunction } from "express";
 import { ErrorMessage } from "express-validator/lib/base";
-import { MessageWithEntityId } from "../types/models/messages-types";
+import { MessageWithEntityId } from "../types/messages-types";
 import { RequestWithBody } from "../types/primary-types";
 import { UserManager } from "../managers/user-manager";
 import { UserLoginInputDTO, UserLoginOutputDTO } from "../types/dtos/user-dto";

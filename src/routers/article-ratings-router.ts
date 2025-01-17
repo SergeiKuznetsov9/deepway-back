@@ -3,7 +3,7 @@ import { WithId } from "mongodb";
 import {
   ErrorMessage,
   MessageWithEntityId,
-} from "../types/models/messages-types";
+} from "../types/messages-types";
 import { RequestWithBody, RequestWithQuery } from "../types/primary-types";
 import {
   getArticleRatingGetQueryValidator,

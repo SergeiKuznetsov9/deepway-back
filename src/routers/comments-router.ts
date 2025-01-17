@@ -3,7 +3,7 @@ import { Response, Router } from "express";
 import {
   ErrorMessage,
   MessageWithEntityId,
-} from "../types/models/messages-types";
+} from "../types/messages-types";
 import { RequestWithBody, RequestWithQuery } from "../types/primary-types";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 import {

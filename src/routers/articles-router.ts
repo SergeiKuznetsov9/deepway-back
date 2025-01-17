@@ -1,5 +1,5 @@
 import { Response, Router } from "express";
-import { ErrorMessage } from "../types/models/messages-types";
+import { ErrorMessage } from "../types/messages-types";
 import { RequestWithParams, RequestWithQuery } from "../types/primary-types";
 import {
   getArticlesGetQueryValidator,

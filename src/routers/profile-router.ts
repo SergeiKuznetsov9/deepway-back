@@ -1,7 +1,7 @@
 import { Router, Response } from "express";
 import { WithId } from "mongodb";
 
-import { ErrorMessage, SuccessMessage } from "../types/models/messages-types";
+import { ErrorMessage, SuccessMessage } from "../types/messages-types";
 import {
   RequestWithParams,
   RequestWithParamsAndBody,

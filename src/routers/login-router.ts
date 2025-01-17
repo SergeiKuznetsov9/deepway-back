@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 
-import { ErrorMessage } from "../types/models/messages-types";
+import { ErrorMessage } from "../types/messages-types";
 import { User, UserCredentials } from "../types/models/user-types";
 import { LoginManager } from "../managers/login-manager";
 import { RequestWithBody } from "../types/primary-types";

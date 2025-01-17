@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 
-import { ErrorMessage } from "../types/models/messages-types";
+import { ErrorMessage } from "../types/messages-types";
 import { RequestWithParams } from "../types/primary-types";
 import {
   Notification,
