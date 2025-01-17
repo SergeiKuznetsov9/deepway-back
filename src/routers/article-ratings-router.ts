@@ -1,21 +1,21 @@
 import { Response, Router } from "express";
 import { WithId } from "mongodb";
-
 import {
   ErrorMessage,
   MessageWithEntityId,
 } from "../types/models/messages-types";
 import { RequestWithBody, RequestWithQuery } from "../types/primary-types";
 import {
-  ArticleRating,
-  ArticleRatingGetQuery,
-} from "../types/models/article-rating-types";
-import {
   getArticleRatingGetQueryValidator,
   getArticleRatingPostBodyValidator,
 } from "../middlewares/inputValidators/articles-rating-validators";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 import { ArticleRatingsManager } from "../managers/article-ratings-manager";
+import {
+  ArticleRatingGetInputDTO,
+  ArticleRatingGetOutputDTO,
+  ArticleRatingPostInputDTO,
+} from "../types/dtos/article-rating-dto";
 
 export const getArticleRatingsRouter = (
   manager: ArticleRatingsManager
@@ -27,8 +27,8 @@ export const getArticleRatingsRouter = (
     getArticleRatingGetQueryValidator(),
     inputValidationMiddleware,
     async (
-      req: RequestWithQuery<ArticleRatingGetQuery>,
-      res: Response<WithId<ArticleRating> | ErrorMessage | null>
+      req: RequestWithQuery<ArticleRatingGetInputDTO>,
+      res: Response<WithId<ArticleRatingGetOutputDTO> | ErrorMessage | null>
     ) => {
       try {
         const articleRating = await manager.handleGetArticleRating(req);
@@ -45,7 +45,7 @@ export const getArticleRatingsRouter = (
     getArticleRatingPostBodyValidator(),
     inputValidationMiddleware,
     async (
-      req: RequestWithBody<ArticleRating>,
+      req: RequestWithBody<ArticleRatingPostInputDTO>,
       res: Response<MessageWithEntityId | ErrorMessage>
     ) => {
       try {

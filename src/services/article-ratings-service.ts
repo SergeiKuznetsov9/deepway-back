@@ -1,21 +1,23 @@
 import { Db } from "mongodb";
 import {
-  ArticleRating,
-  ArticleRatingGetQuery,
-} from "../types/models/article-rating-types";
+  ArticleRatingGetInputDTO,
+  ArticleRatingPostInputDTO,
+} from "../types/dtos/article-rating-dto";
+import { ArticleRatingEntity } from "../types/entities/article-rating-entity";
 
 export class ArticleRatingsService {
   private collection;
 
   constructor(mongoDb: Db) {
-    this.collection = mongoDb.collection<ArticleRating>("article-ratings");
+    this.collection =
+      mongoDb.collection<ArticleRatingEntity>("article-ratings");
   }
 
-  async getArticleRating(articleRatingGetQuery: ArticleRatingGetQuery) {
+  async getArticleRating(articleRatingGetQuery: ArticleRatingGetInputDTO) {
     return await this.collection.findOne(articleRatingGetQuery);
   }
 
-  async postArticleRating(articleRatingPostBody: ArticleRating) {
+  async postArticleRating(articleRatingPostBody: ArticleRatingPostInputDTO) {
     return await this.collection.insertOne(articleRatingPostBody);
   }
 }
