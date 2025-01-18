@@ -1,4 +1,4 @@
-import { ArticleBlock, ArticleType } from "../common/article-types";
+import { ArticleBlock, ArticleType } from "../common/article-common-types";
 import { User } from "../models/user-types";
 
 export type ArticlesGetInputDTO = Partial<{

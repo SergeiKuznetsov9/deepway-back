@@ -1,4 +1,4 @@
-import { ArticleBlock, ArticleType } from "../common/article-types";
+import { ArticleBlock, ArticleType } from "../common/article-common-types";
 
 export type ArticleEntity = {
   title: string;

@@ -1,4 +1,4 @@
-import { Features, Role } from "../models/user-types";
+import { Features, Role } from "../common/user-common-types";
 
 export type UserEntity = {
   login: string;

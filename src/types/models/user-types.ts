@@ -1,6 +1,6 @@
 export type Role = "USER" | "MANAGER" | "ADMIN";
 export type Features = Record<string, boolean>;
-
+// TODO Выпилить когда будет реализован функционал по авторизации
 export type User = {
   username: string;
   roles: Role[];
