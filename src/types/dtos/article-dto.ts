@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { ArticleBlock, ArticleType } from "../common/article-types";
 import { User } from "../models/user-types";
 

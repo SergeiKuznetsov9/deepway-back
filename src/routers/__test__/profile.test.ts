@@ -4,8 +4,8 @@ import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
 import { getProfilesMocks } from "../../mocks/profiles";
-import { Profile } from "../../types/models/profile-types";
-import { ErrorMessage } from "../../types/models/messages-types";
+import { ProfileEntity } from "../../types/entities/profile-entity";
+import { ErrorMessage } from "../../types/messages-types";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
@@ -20,7 +20,7 @@ describe("Profile API", () => {
     const res: Response = await request(app).get(
       "/profile/670e4a9955e53c8e609cf176"
     );
-    const body = res.body as Profile;
+    const body = res.body as ProfileEntity;
     expect(body.userId).toBe("670e4a9955e53c8e609cf176");
   });
 
@@ -47,7 +47,7 @@ describe("Profile API", () => {
 
     const updatedProfile = (await db.collection("profile").findOne({
       _id: new ObjectId("670e4b2c55e53c8e609fe55b"),
-    })) as WithId<Profile>;
+    })) as WithId<ProfileEntity>;
 
     expect(updatedProfile.first).toBe("Новое значение");
     expect(updatedProfile.lastname).toBe("Новое значение");

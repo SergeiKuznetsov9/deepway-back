@@ -4,8 +4,9 @@ import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { getUsersMocks } from "../../mocks/users";
 import { getArticlesMocks } from "../../mocks/articles";
-import { Article, ArticlesGetQuery } from "../../types/models/article-types";
-import { ErrorMessage } from "../../types/models/messages-types";
+import { ArticleEntity } from "../../types/entities/article-entity";
+import { ArticlesGetInputDTO } from "../../types/dtos/article-dto";
+import { ErrorMessage } from "../../types/messages-types";
 
 const checkRightNumberSubsequence = (
   order: "asc" | "desc",
@@ -57,7 +58,9 @@ describe("Articles API", () => {
       "670e4a0655e53c8e6099fcf7",
     ];
     const res = await request(app).get("/articles").query(query);
-    const resIdsArray = res.body.map((article: WithId<Article>) => article._id);
+    const resIdsArray = res.body.map(
+      (article: WithId<ArticleEntity>) => article._id
+    );
     expect(resIdsArray).toEqual(correctResultsIds);
   });
 
@@ -67,7 +70,7 @@ describe("Articles API", () => {
     };
     const res = await request(app).get("/articles").query(query);
     const isUserInArticle = res.body.every(
-      (article: Article) => "user" in article
+      (article: ArticleEntity) => "user" in article
     );
     expect(isUserInArticle).toBe(true);
   });
@@ -77,7 +80,7 @@ describe("Articles API", () => {
       q: "reac",
     };
     const res = await request(app).get("/articles").query(query);
-    const isQMatchesWithResult = res.body.every((article: Article) =>
+    const isQMatchesWithResult = res.body.every((article: ArticleEntity) =>
       article.title.toLowerCase().includes(query.q)
     );
     expect(isQMatchesWithResult).toBe(true);
@@ -96,7 +99,7 @@ describe("Articles API", () => {
       type: "IT",
     };
     const res = await request(app).get("/articles").query(query);
-    const isAllTypesMatches = res.body.every((article: Article) =>
+    const isAllTypesMatches = res.body.every((article: ArticleEntity) =>
       article.type.includes("IT")
     );
     expect(isAllTypesMatches).toBe(true);
@@ -107,7 +110,7 @@ describe("Articles API", () => {
       type: "ECONOMICS",
     };
     const res = await request(app).get("/articles").query(query);
-    const isAllTypesMatches = res.body.every((article: Article) =>
+    const isAllTypesMatches = res.body.every((article: ArticleEntity) =>
       article.type.includes("ECONOMICS")
     );
     expect(isAllTypesMatches).toBe(true);
@@ -118,7 +121,7 @@ describe("Articles API", () => {
       type: "SCIENCE",
     };
     const res = await request(app).get("/articles").query(query);
-    const isAllTypesMatches = res.body.every((article: Article) =>
+    const isAllTypesMatches = res.body.every((article: ArticleEntity) =>
       article.type.includes("SCIENCE")
     );
     expect(isAllTypesMatches).toBe(true);
@@ -126,14 +129,14 @@ describe("Articles API", () => {
 
   it("GET /articles?_sort=created&_order=asc", async () => {
     const query: {
-      _sort: NonNullable<ArticlesGetQuery["_sort"]>;
-      _order: NonNullable<ArticlesGetQuery["_order"]>;
+      _sort: NonNullable<ArticlesGetInputDTO["_sort"]>;
+      _order: NonNullable<ArticlesGetInputDTO["_order"]>;
     } = {
       _sort: "created",
       _order: "asc",
     };
     const res = await request(app).get("/articles").query(query);
-    const datesArray: number[] = res.body.map((article: Article) => {
+    const datesArray: number[] = res.body.map((article: ArticleEntity) => {
       const articleDate = article.createdAt;
       const [day, month, year] = articleDate.split(".").map(Number);
       return new Date(year, month - 1, day).getTime();
@@ -147,14 +150,14 @@ describe("Articles API", () => {
 
   it("GET /articles?_sort=created&_order=desc", async () => {
     const query: {
-      _sort: NonNullable<ArticlesGetQuery["_sort"]>;
-      _order: NonNullable<ArticlesGetQuery["_order"]>;
+      _sort: NonNullable<ArticlesGetInputDTO["_sort"]>;
+      _order: NonNullable<ArticlesGetInputDTO["_order"]>;
     } = {
       _sort: "created",
       _order: "desc",
     };
     const res = await request(app).get("/articles").query(query);
-    const datesArray: number[] = res.body.map((article: Article) => {
+    const datesArray: number[] = res.body.map((article: ArticleEntity) => {
       const articleDate = article.createdAt;
       const [day, month, year] = articleDate.split(".").map(Number);
       return new Date(year, month - 1, day).getTime();
@@ -168,15 +171,15 @@ describe("Articles API", () => {
 
   it("GET /articles?_sort=views&_order=asc", async () => {
     const query: {
-      _sort: NonNullable<ArticlesGetQuery["_sort"]>;
-      _order: NonNullable<ArticlesGetQuery["_order"]>;
+      _sort: NonNullable<ArticlesGetInputDTO["_sort"]>;
+      _order: NonNullable<ArticlesGetInputDTO["_order"]>;
     } = {
       _sort: "views",
       _order: "asc",
     };
     const res = await request(app).get("/articles").query(query);
     const viewsArray: number[] = res.body.map(
-      (article: Article) => article.views
+      (article: ArticleEntity) => article.views
     );
     const isCorrectSubsequence = checkRightNumberSubsequence(
       query._order,
@@ -187,15 +190,15 @@ describe("Articles API", () => {
 
   it("GET /articles?_sort=views&_order=desc", async () => {
     const query: {
-      _sort: NonNullable<ArticlesGetQuery["_sort"]>;
-      _order: NonNullable<ArticlesGetQuery["_order"]>;
+      _sort: NonNullable<ArticlesGetInputDTO["_sort"]>;
+      _order: NonNullable<ArticlesGetInputDTO["_order"]>;
     } = {
       _sort: "views",
       _order: "desc",
     };
     const res = await request(app).get("/articles").query(query);
     const viewsArray: number[] = res.body.map(
-      (article: Article) => article.views
+      (article: ArticleEntity) => article.views
     );
     const isCorrectSubsequence = checkRightNumberSubsequence(
       query._order,

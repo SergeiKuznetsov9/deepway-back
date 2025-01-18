@@ -5,8 +5,8 @@ import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
 import { getCommentsMocks } from "../../mocks/comments";
 import { getUsersMocks } from "../../mocks/users";
-import { Comment } from "../../types/models/comment-types";
-import { ErrorMessage } from "../../types/models/messages-types";
+import { ErrorMessage } from "express-validator/lib/base";
+import { CommentEntity } from "../../types/entities/comment-entity";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
@@ -23,12 +23,12 @@ describe("Comments API", () => {
       articleId: "670e4a0655e53c8e6099fcf2",
     };
     const res: Response = await request(app).get("/comments").query(query);
-    const body = res.body as Comment[];
+    const body = res.body as CommentEntity[];
 
     const isCorrectComments = body.every(
-      (comment: Comment) => comment.articleId === query.articleId
+      (comment: CommentEntity) => comment.articleId === query.articleId
     );
-    const isNoUserData = body.every((comment: Comment) => !("user" in comment));
+    const isNoUserData = body.every((comment: CommentEntity) => !("user" in comment));
     expect(body.length).not.toBe(0);
     expect(isCorrectComments).toBe(true);
     expect(isNoUserData).toBe(true);
@@ -40,12 +40,12 @@ describe("Comments API", () => {
       _expand: "user",
     };
     const res: Response = await request(app).get("/comments").query(query);
-    const body = res.body as Comment[];
+    const body = res.body as CommentEntity[];
 
     const isCorrectComments = body.every(
-      (comment: Comment) => comment.articleId === query.articleId
+      (comment: CommentEntity) => comment.articleId === query.articleId
     );
-    const isUserData = body.every((comment: Comment) => "user" in comment);
+    const isUserData = body.every((comment: CommentEntity) => "user" in comment);
     expect(body.length).not.toBe(0);
     expect(isCorrectComments).toBe(true);
     expect(isUserData).toBe(true);
@@ -75,7 +75,7 @@ describe("Comments API", () => {
 
     const insertedComment = (await db
       .collection("comments")
-      .findOne({ _id: new ObjectId(insertedId) })) as WithId<Comment>;
+      .findOne({ _id: new ObjectId(insertedId) })) as WithId<CommentEntity>;
 
     expect(insertedComment.text).toBe("Тестовый коммент");
   });

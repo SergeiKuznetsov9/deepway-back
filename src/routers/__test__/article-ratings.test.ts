@@ -4,8 +4,9 @@ import { Response } from "supertest";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { getArticleRatingsMocks } from "../../mocks/article-ratings";
-import { ArticleRating } from "../../types/models/article-rating-types";
-import { ErrorMessage } from "../../types/models/messages-types";
+import { ArticleRatingGetOutputDTO } from "../../types/dtos/article-rating-dto";
+import { ErrorMessage } from "../../types/messages-types";
+import { ArticleRatingEntity } from "../../types/entities/article-rating-entity";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
@@ -24,7 +25,7 @@ describe("Article-ratings API", () => {
     const res: Response = await request(app)
       .get("/article-ratings")
       .query(query);
-    const body = res.body as WithId<ArticleRating>;
+    const body = res.body as ArticleRatingGetOutputDTO;
     expect(body._id).toBe("673f3f568b0d3c3fe74a47ed");
   });
 
@@ -64,11 +65,11 @@ describe("Article-ratings API", () => {
       .post("/article-ratings")
       .send(reqBody);
 
-    const insertedId = res.body._id as string;
+    const _id: ObjectId = res.body._id;
 
     const insertedArticleRating = (await db
       .collection("article-ratings")
-      .findOne({ _id: new ObjectId(insertedId) })) as WithId<ArticleRating>;
+      .findOne({ _id: new ObjectId(_id) })) as WithId<ArticleRatingEntity>;
 
     expect(insertedArticleRating.feedback).toBe("Тестовый фидбэк");
   });

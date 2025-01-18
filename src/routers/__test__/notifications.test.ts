@@ -3,9 +3,9 @@ import { Db } from "mongodb";
 import { createApp } from "../../app";
 import { initTestDB } from "../../../jest.setup";
 import { Response } from "supertest";
-import { Notification } from "../../types/models/notification-types";
 import { getNotificationsMocks } from "../../mocks/notifications";
-import { ErrorMessage } from "../../types/models/messages-types";
+import { NotificationEntity } from "../../types/entities/notification-entity";
+import { ErrorMessage } from "../../types/messages-types";
 
 let app: ReturnType<typeof createApp>;
 let db: Db;
@@ -19,10 +19,10 @@ describe("Notifications API", () => {
   it("GET /notifications", async () => {
     const userId = "670e4a9955e53c8e609cf174";
     const res: Response = await request(app).get(`/notifications/${userId}`);
-    const body = res.body as Notification[];
+    const body = res.body as NotificationEntity[];
 
     const isCorrectNotifications = body.every(
-      (notification: Notification) => notification.userId === userId
+      (notification: NotificationEntity) => notification.userId === userId
     );
     expect(isCorrectNotifications).toBe(true);
   });
