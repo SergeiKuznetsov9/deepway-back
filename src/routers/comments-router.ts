@@ -1,9 +1,6 @@
-import { Response, Router } from "express";
+import { NextFunction, Response, Router } from "express";
 
-import {
-  ErrorMessage,
-  MessageWithEntityId,
-} from "../types/messages-types";
+import { MessageWithEntityId } from "../types/messages-types";
 import { RequestWithBody, RequestWithQuery } from "../types/primary-types";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 import {
@@ -26,14 +23,14 @@ export const getCommentsRouter = (manager: CommentsManager) => {
     inputValidationMiddleware,
     async (
       req: RequestWithQuery<CommentGetInputDTO>,
-      res: Response<CommentGetOutputDTO[] | ErrorMessage>
+      res: Response<CommentGetOutputDTO[]>,
+      next: NextFunction
     ) => {
       try {
         const comments = await manager.handleGetComments(req);
         res.json(comments);
       } catch (error) {
-        console.error("Ошибка чтения данных", error);
-        res.status(500).json({ error: "Ошибка получения данных" });
+        next(error);
       }
     }
   );
@@ -44,14 +41,14 @@ export const getCommentsRouter = (manager: CommentsManager) => {
     inputValidationMiddleware,
     async (
       req: RequestWithBody<CommentPostInputDTO>,
-      res: Response<MessageWithEntityId | ErrorMessage>
+      res: Response<MessageWithEntityId>,
+      next: NextFunction
     ) => {
       try {
         const postResult = await manager.handlePostComment(req);
         res.status(201).json(postResult);
       } catch (error) {
-        console.error("Ошибка сохранения данных", error);
-        res.status(500).json({ error: "Ошибка сохранения данных" });
+        next(error);
       }
     }
   );

@@ -1,5 +1,7 @@
 import { Db } from "mongodb";
 import { NotificationEntity } from "../types/entities/notification-entity";
+import { Errors } from "../constants/errors-constants";
+import { DatabaseError } from "../errors/database-error";
 
 export class NotificationsService {
   private collection;
@@ -9,6 +11,11 @@ export class NotificationsService {
   }
 
   async getNotificationsByUserId(userId: string) {
-    return await this.collection.find({ userId }).toArray();
+    try {
+      return await this.collection.find({ userId }).toArray();
+    } catch (error) {
+      console.error(Errors.DBGet, error);
+      throw new DatabaseError(Errors.DBGet);
+    }
   }
 }

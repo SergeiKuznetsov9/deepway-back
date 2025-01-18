@@ -30,7 +30,9 @@ export const getArticleRatingsRouter = (
       try {
         const articleRating = await manager.handleGetArticleRating(req);
         res.status(200).json(articleRating);
-      } catch (error) {}
+      } catch (error) {
+        next(error);
+      }
     }
   );
 

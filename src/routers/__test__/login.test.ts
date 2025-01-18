@@ -36,7 +36,7 @@ describe("Login API", () => {
     const body = res.body;
 
     expect(body).toEqual({
-      error: "Пользователь с таким именем и паролем не существует",
+      error: "Логин и пароль указаны неверно",
     });
   });
 });

@@ -1,7 +1,6 @@
-import { Router, Response } from "express";
-import { WithId } from "mongodb";
+import { Router, Response, NextFunction } from "express";
 
-import { ErrorMessage, SuccessMessage } from "../types/messages-types";
+import { SuccessMessage } from "../types/messages-types";
 import {
   RequestWithParams,
   RequestWithParamsAndBody,
@@ -19,6 +18,7 @@ import {
   ProfilePutBodyInputDTO,
   ProfilePutInputDTO,
 } from "../types/dtos/profile-dto";
+import { DatabaseError } from "../errors/database-error";
 
 export const getProfileRouter = (manager: ProfileManager) => {
   const router = Router();
@@ -29,14 +29,14 @@ export const getProfileRouter = (manager: ProfileManager) => {
     inputValidationMiddleware,
     async (
       req: RequestWithParams<ProfileGetInputDTO>,
-      res: Response<ProfileGetOutputDTO | ErrorMessage | null>
+      res: Response<ProfileGetOutputDTO | null>,
+      next: NextFunction
     ) => {
       try {
         const profile = await manager.handleGetProfileByUserId(req);
         res.json(profile);
       } catch (error) {
-        console.error("Ошибка чтения данных", error);
-        res.status(500).json({ error: "Ошибка получения данных" });
+        next(error);
       }
     }
   );
@@ -48,19 +48,18 @@ export const getProfileRouter = (manager: ProfileManager) => {
     inputValidationMiddleware,
     async (
       req: RequestWithParamsAndBody<ProfilePutInputDTO, ProfilePutBodyInputDTO>,
-      res: Response<ErrorMessage | SuccessMessage>
+      res: Response<SuccessMessage>,
+      next: NextFunction
     ): Promise<void> => {
       try {
         const updateResult = await manager.handleUpdateProfileByUserId(req);
         if (updateResult.matchedCount === 0) {
-          res.status(404).json({ error: "Профиль не найден" });
-          return;
+          throw new DatabaseError();
         }
 
         res.status(200).json({ message: "Профиль обновлён" });
       } catch (error) {
-        console.error("Ошибка обновления данных", error);
-        res.status(500).json({ error: "Ошибка обновления данных" });
+        next(error);
       }
     }
   );

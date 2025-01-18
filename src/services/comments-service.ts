@@ -6,6 +6,8 @@ import {
   CommentPostInputDTO,
 } from "../types/dtos/comment-dto";
 import { User } from "../types/models/user-types";
+import { DatabaseError } from "../errors/database-error";
+import { Errors } from "../constants/errors-constants";
 
 export class CommentsService {
   private collection;
@@ -43,12 +45,22 @@ export class CommentsService {
       );
     }
 
-    return await this.collection
-      .aggregate<WithId<CommentEntity & { user?: User }>>(pipeline)
-      .toArray();
+    try {
+      return await this.collection
+        .aggregate<WithId<CommentEntity & { user?: User }>>(pipeline)
+        .toArray();
+    } catch (error) {
+      console.error(Errors.DBGet, error);
+      throw new DatabaseError(Errors.DBGet);
+    }
   }
 
   async postComment(postCommentBody: CommentPostInputDTO) {
-    return await this.collection.insertOne(postCommentBody);
+    try {
+      return await this.collection.insertOne(postCommentBody);
+    } catch (error) {
+      console.error(Errors.DBInsert, error);
+      throw new DatabaseError(Errors.DBInsert);
+    }
   }
 }

@@ -1,9 +1,9 @@
-import { Router, Response } from "express";
+import { Router, Response, NextFunction } from "express";
 
-import { ErrorMessage } from "../types/messages-types";
 import { User, UserCredentials } from "../types/models/user-types";
 import { LoginManager } from "../managers/login-manager";
 import { RequestWithBody } from "../types/primary-types";
+import { LoginError } from "../errors/login-error";
 
 export const getLoginRouter = (manager: LoginManager) => {
   const router = Router();
@@ -12,7 +12,8 @@ export const getLoginRouter = (manager: LoginManager) => {
     "/",
     async (
       req: RequestWithBody<UserCredentials>,
-      res: Response<User | ErrorMessage>
+      res: Response<User>,
+      next: NextFunction
     ) => {
       try {
         const user = await manager.handleGetUser(req);
@@ -20,13 +21,10 @@ export const getLoginRouter = (manager: LoginManager) => {
         if (user) {
           res.status(200).json(user);
         } else {
-          res.status(404).json({
-            error: "Пользователь с таким именем и паролем не существует",
-          });
+          next(new LoginError());
         }
       } catch (error) {
-        console.error("Ошибка сохранения данных", error);
-        res.status(500).json({ error: "Ошибка сохранения данных" });
+        next(error);
       }
     }
   );

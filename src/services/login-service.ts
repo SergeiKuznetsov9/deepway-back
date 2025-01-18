@@ -1,5 +1,7 @@
 import { Db } from "mongodb";
 import { User, UserCredentials } from "../types/models/user-types";
+import { DatabaseError } from "../errors/database-error";
+import { Errors } from "../constants/errors-constants";
 
 export class LoginService {
   private collection;
@@ -9,8 +11,13 @@ export class LoginService {
   }
 
   async getUser(userData: UserCredentials) {
-    return await this.collection.findOne(userData, {
-      projection: { password: 0 },
-    });
+    try {
+      return await this.collection.findOne(userData, {
+        projection: { password: 0 },
+      });
+    } catch (error) {
+      console.error(Errors.DBGet, error);
+      throw new DatabaseError(Errors.DBGet);
+    }
   }
 }

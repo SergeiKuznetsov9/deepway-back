@@ -1,4 +1,4 @@
-import { Response, Router } from "express";
+import { NextFunction, Response, Router } from "express";
 import {
   EmailSendInfoOutputDTO,
   EmailSendInputDTO,
@@ -13,10 +13,15 @@ export const getEmailRouter = (manager: EmailManager) => {
     "/",
     async (
       req: RequestWithBody<EmailSendInputDTO>,
-      res: Response<EmailSendInfoOutputDTO>
+      res: Response<EmailSendInfoOutputDTO>,
+      next: NextFunction
     ) => {
-      const sendResult = await manager.handleSendEmail(req);
-      res.status(200).json(sendResult);
+      try {
+        const sendResult = await manager.handleSendEmail(req);
+        res.status(200).json(sendResult);
+      } catch (error) {
+        next(error);
+      }
     }
   );
 
