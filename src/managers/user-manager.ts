@@ -9,7 +9,6 @@ import {
 } from "../types/dtos/user-dto";
 import { RegistrationError } from "../errors/registration-error";
 import { Errors } from "../constants/errors-constants";
-import { DatabaseError } from "../errors/database-error";
 import { AuthError } from "../errors/auth-error";
 
 export class UserManager {
@@ -42,9 +41,6 @@ export class UserManager {
     };
 
     const postResult = await this.userService.postUser(userEntity);
-    if (!postResult || !postResult.insertedId) {
-      throw new DatabaseError(Errors.DBInsert);
-    }
     return { _id: postResult.insertedId.toString() };
   }
 

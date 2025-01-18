@@ -1,5 +1,4 @@
 import { Router, Response, NextFunction } from "express";
-import { ErrorMessage } from "express-validator/lib/base";
 import { MessageWithEntityId } from "../types/messages-types";
 import { RequestWithBody } from "../types/primary-types";
 import { UserManager } from "../managers/user-manager";
@@ -12,7 +11,7 @@ export const getUserRouter = (manager: UserManager) => {
     "/registration",
     async (
       req: RequestWithBody<UserLoginInputDTO>,
-      res: Response<MessageWithEntityId | ErrorMessage>,
+      res: Response<MessageWithEntityId>,
       next: NextFunction
     ) => {
       try {
@@ -28,7 +27,7 @@ export const getUserRouter = (manager: UserManager) => {
     "/login",
     async (
       req: RequestWithBody<UserLoginInputDTO>,
-      res: Response<UserLoginOutputDTO | ErrorMessage>,
+      res: Response<UserLoginOutputDTO>,
       next: NextFunction
     ) => {
       try {

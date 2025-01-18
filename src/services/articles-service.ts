@@ -3,6 +3,8 @@ import { Pipeline } from "../types/primary-types";
 import { ArticleEntity } from "../types/entities/article-entity";
 import { ArticlesGetInputDTO } from "../types/dtos/article-dto";
 import { User } from "../types/models/user-types";
+import { Errors } from "../constants/errors-constants";
+import { DatabaseError } from "../errors/database-error";
 
 export class ArticlesService {
   private collection;
@@ -28,37 +30,49 @@ export class ArticlesService {
     this.applyPagination(pipeline, _limit, _page);
     this.applyExpansion(pipeline, _expand);
 
-    return await this.collection
-      .aggregate<WithId<ArticleEntity & { user?: User }>>(pipeline)
-      .toArray();
+    try {
+      return await this.collection
+        .aggregate<WithId<ArticleEntity & { user?: User }>>(pipeline)
+        .toArray();
+    } catch (error) {
+      console.error(Errors.DBGet, error);
+      throw new DatabaseError(Errors.DBGet);
+    }
   }
 
   async getArticleById(id: ObjectId) {
-    return await this.collection
-      .aggregate<WithId<ArticleEntity & { user: User }>>([
-        { $match: { _id: id } },
-        {
-          $addFields: {
-            userIdObject: {
-              $convert: {
-                input: "$userId",
-                to: "objectId",
-              },
+    const pipeline = [
+      { $match: { _id: id } },
+      {
+        $addFields: {
+          userIdObject: {
+            $convert: {
+              input: "$userId",
+              to: "objectId",
             },
           },
         },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userIdObject",
-            foreignField: "_id",
-            as: "user",
-          },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userIdObject",
+          foreignField: "_id",
+          as: "user",
         },
-        { $unwind: "$user" },
-        { $unset: ["userIdObject", "user.password"] },
-      ])
-      .next();
+      },
+      { $unwind: "$user" },
+      { $unset: ["userIdObject", "user.password"] },
+    ];
+
+    try {
+      return await this.collection
+        .aggregate<WithId<ArticleEntity & { user: User }>>(pipeline)
+        .next();
+    } catch (error) {
+      console.error(Errors.DBGet, error);
+      throw new DatabaseError(Errors.DBGet);
+    }
   }
 
   private applyTypeFilter = (

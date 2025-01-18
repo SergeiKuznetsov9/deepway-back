@@ -1,5 +1,4 @@
-import { Response, Router } from "express";
-import { ErrorMessage } from "../types/messages-types";
+import { NextFunction, Response, Router } from "express";
 import { RequestWithParams, RequestWithQuery } from "../types/primary-types";
 import {
   getArticlesGetQueryValidator,
@@ -22,14 +21,14 @@ export const getArticleRouter = (manager: ArticlesManager) => {
     inputValidationMiddleware,
     async (
       req: RequestWithQuery<ArticlesGetInputDTO>,
-      res: Response<ArticleOutputDTO[] | ErrorMessage>
+      res: Response<ArticleOutputDTO[]>,
+      next: NextFunction
     ) => {
       try {
         const articles = await manager.handleGetArticles(req);
         res.json(articles);
       } catch (error) {
-        console.error("Ошибка чтения данных", error);
-        res.status(500).json({ error: "Ошибка получения данных" });
+        next(error);
       }
     }
   );
@@ -40,14 +39,14 @@ export const getArticleRouter = (manager: ArticlesManager) => {
     inputValidationMiddleware,
     async (
       req: RequestWithParams<ArticleGetInputDTO>,
-      res: Response<ArticleOutputDTO | ErrorMessage | null>
+      res: Response<ArticleOutputDTO | null>,
+      next: NextFunction
     ) => {
       try {
         const article = await manager.handleGetArticleById(req);
         res.json(article);
       } catch (error) {
-        console.error("Ошибка чтения данных", error);
-        res.status(500).json({ error: "Ошибка получения данных" });
+        next(error);
       }
     }
   );

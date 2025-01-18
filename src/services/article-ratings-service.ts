@@ -4,6 +4,8 @@ import {
   ArticleRatingPostInputDTO,
 } from "../types/dtos/article-rating-dto";
 import { ArticleRatingEntity } from "../types/entities/article-rating-entity";
+import { Errors } from "../constants/errors-constants";
+import { DatabaseError } from "../errors/database-error";
 
 export class ArticleRatingsService {
   private collection;
@@ -14,10 +16,20 @@ export class ArticleRatingsService {
   }
 
   async getArticleRating(articleRatingGetQuery: ArticleRatingGetInputDTO) {
-    return await this.collection.findOne(articleRatingGetQuery);
+    try {
+      return await this.collection.findOne(articleRatingGetQuery);
+    } catch (error) {
+      console.error(Errors.DBGet, error);
+      throw new DatabaseError(Errors.DBGet);
+    }
   }
 
   async postArticleRating(articleRatingPostBody: ArticleRatingPostInputDTO) {
-    return await this.collection.insertOne(articleRatingPostBody);
+    try {
+      return await this.collection.insertOne(articleRatingPostBody);
+    } catch (error) {
+      console.error(Errors.DBInsert, error);
+      throw new DatabaseError(Errors.DBInsert);
+    }
   }
 }

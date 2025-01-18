@@ -37,9 +37,6 @@ export class ArticleRatingsManager {
     req: RequestWithBody<ArticleRatingPostInputDTO>
   ) {
     const postResult = await this.service.postArticleRating(req.body);
-    if (!postResult || !postResult.insertedId) {
-      throw new Error("Не удалось сохранить оценку");
-    }
     return { _id: postResult.insertedId.toString() };
   }
 }

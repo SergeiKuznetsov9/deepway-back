@@ -1,9 +1,5 @@
-import { Response, Router } from "express";
-import { WithId } from "mongodb";
-import {
-  ErrorMessage,
-  MessageWithEntityId,
-} from "../types/messages-types";
+import { NextFunction, Response, Router } from "express";
+import { MessageWithEntityId } from "../types/messages-types";
 import { RequestWithBody, RequestWithQuery } from "../types/primary-types";
 import {
   getArticleRatingGetQueryValidator,
@@ -28,15 +24,13 @@ export const getArticleRatingsRouter = (
     inputValidationMiddleware,
     async (
       req: RequestWithQuery<ArticleRatingGetInputDTO>,
-      res: Response<WithId<ArticleRatingGetOutputDTO> | ErrorMessage | null>
+      res: Response<ArticleRatingGetOutputDTO | null>,
+      next: NextFunction
     ) => {
       try {
         const articleRating = await manager.handleGetArticleRating(req);
         res.status(200).json(articleRating);
-      } catch (error) {
-        console.error("Ошибка получения данных", error);
-        res.status(500).json({ error: "Ошибка получения данных" });
-      }
+      } catch (error) {}
     }
   );
 
@@ -46,14 +40,14 @@ export const getArticleRatingsRouter = (
     inputValidationMiddleware,
     async (
       req: RequestWithBody<ArticleRatingPostInputDTO>,
-      res: Response<MessageWithEntityId | ErrorMessage>
+      res: Response<MessageWithEntityId>,
+      next: NextFunction
     ) => {
       try {
         const postResult = await manager.handlePostArticleRating(req);
         res.status(201).json(postResult);
       } catch (error) {
-        console.error("Ошибка сохранения данных", error);
-        res.status(500).json({ error: "Ошибка сохранения данных" });
+        next(error);
       }
     }
   );
