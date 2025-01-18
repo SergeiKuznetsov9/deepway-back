@@ -7,18 +7,18 @@ import {
   RequestWithParamsAndBody,
 } from "../types/primary-types";
 import {
-  Profile,
-  ProfileGetParams,
-  ProfilePutBody,
-  ProfilePutParams,
-} from "../types/models/profile-types";
-import {
   getProfileGetParamsValidator,
   getProfilePutBodyValidator,
   getProfilePutParamsValidator,
 } from "../middlewares/inputValidators/profile-validators";
 import { inputValidationMiddleware } from "../middlewares/inputValidators/common-validators";
 import { ProfileManager } from "../managers/profile-manager";
+import {
+  ProfileGetInputDTO,
+  ProfileGetOutputDTO,
+  ProfilePutBodyInputDTO,
+  ProfilePutInputDTO,
+} from "../types/dtos/profile-dto";
 
 export const getProfileRouter = (manager: ProfileManager) => {
   const router = Router();
@@ -28,8 +28,8 @@ export const getProfileRouter = (manager: ProfileManager) => {
     getProfileGetParamsValidator(),
     inputValidationMiddleware,
     async (
-      req: RequestWithParams<ProfileGetParams>,
-      res: Response<WithId<Profile> | ErrorMessage | null>
+      req: RequestWithParams<ProfileGetInputDTO>,
+      res: Response<ProfileGetOutputDTO | ErrorMessage | null>
     ) => {
       try {
         const profile = await manager.handleGetProfileByUserId(req);
@@ -47,7 +47,7 @@ export const getProfileRouter = (manager: ProfileManager) => {
     getProfilePutBodyValidator(),
     inputValidationMiddleware,
     async (
-      req: RequestWithParamsAndBody<ProfilePutParams, ProfilePutBody>,
+      req: RequestWithParamsAndBody<ProfilePutInputDTO, ProfilePutBodyInputDTO>,
       res: Response<ErrorMessage | SuccessMessage>
     ): Promise<void> => {
       try {
