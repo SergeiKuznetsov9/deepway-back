@@ -5,6 +5,8 @@ import { LoginManager } from "../managers/login-manager";
 import { RequestWithBody } from "../types/primary-types";
 import { LoginError } from "../errors/login-error";
 
+// TODO Выпилить когда будет реализован функциоанл по авторизации
+
 export const getLoginRouter = (manager: LoginManager) => {
   const router = Router();
 

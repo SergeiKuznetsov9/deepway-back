@@ -6,11 +6,14 @@ import {
 import { RequestWithBody } from "../types/primary-types";
 import { EmailManager } from "../managers/email-manager";
 
+// TODO описать тесты
+
 export const getEmailRouter = (manager: EmailManager) => {
   const router = Router();
 
   router.post(
     "/",
+    // TODO добавить валидаторы
     async (
       req: RequestWithBody<EmailSendInputDTO>,
       res: Response<EmailSendInfoOutputDTO>,

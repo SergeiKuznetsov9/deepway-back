@@ -4,11 +4,14 @@ import { RequestWithBody } from "../types/primary-types";
 import { UserManager } from "../managers/user-manager";
 import { UserLoginInputDTO, UserLoginOutputDTO } from "../types/dtos/user-dto";
 
+// TODO описать тесты
+
 export const getUserRouter = (manager: UserManager) => {
   const router = Router();
 
   router.post(
     "/registration",
+    // TODO добавить валидаторы
     async (
       req: RequestWithBody<UserLoginInputDTO>,
       res: Response<MessageWithEntityId>,
@@ -25,6 +28,7 @@ export const getUserRouter = (manager: UserManager) => {
 
   router.post(
     "/login",
+    // TODO добавить валидаторы
     async (
       req: RequestWithBody<UserLoginInputDTO>,
       res: Response<UserLoginOutputDTO>,
