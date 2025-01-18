@@ -1,6 +1,6 @@
 import { Db, ObjectId } from "mongodb";
-import { ProfilePutBodyInputDTO } from "src/types/dtos/profile-dto";
-import { ProfileEntity } from "src/types/entities/profile-entity";
+import { ProfilePutBodyInputDTO } from "../types/dtos/profile-dto";
+import { ProfileEntity } from "../types/entities/profile-entity";
 
 export class ProfileService {
   private collection;

@@ -1,6 +1,6 @@
 import { UserCredentials } from "../types/models/user-types";
 import { LoginService } from "../services/login-service";
-import { RequestWithBody } from "src/types/primary-types";
+import { RequestWithBody } from "../types/primary-types";
 
 export class LoginManager {
   private service;
